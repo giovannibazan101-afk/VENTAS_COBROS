@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AllShop — Ventas & Cobros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--bg2:#0d1119;
+  --surface:rgba(255,255,255,0.035);--surface2:rgba(255,255,255,0.065);
+  --blue:#5b9cf6;--blue2:#3b82f6;--teal:#2dd4bf;
+  --gold:#f59e0b;--gold2:#fbbf24;--purple:#a78bfa;
+  --border:rgba(255,255,255,0.07);--border2:rgba(91,156,246,0.3);
+  --text:#e4eaf7;--text2:#8a9ab8;--red:#f87171;--green:#34d399;
+  --radius:18px;--radius-sm:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");opacity:.35;}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(91,156,246,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(91,156,246,0.025) 1px,transparent 1px);background-size:52px 52px;z-index:0;pointer-events:none;}
+.bg-glow{position:fixed;border-radius:50%;filter:blur(160px);opacity:0.07;z-index:0;pointer-events:none;}
+.bg-glow-1{width:700px;height:700px;background:#3b82f6;top:-300px;left:-200px;}
+.bg-glow-2{width:600px;height:600px;background:#a78bfa;bottom:-200px;right:-200px;}
+
+/* ── TOP BAR ── */
+.top-bar{height:60px;padding:0 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(7,9,15,.92);backdrop-filter:blur(24px);position:sticky;top:0;z-index:20;}
+.top-brand{display:flex;align-items:center;gap:10px;}
+.top-brand-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 12px rgba(124,58,237,0.35);}
+.top-brand-name{font-family:'Fraunces',serif;font-size:17px;font-weight:900;letter-spacing:-.3px;}
+.top-brand-sub{font-size:10px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-top:1px;}
+.top-back{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:9px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.04);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;}
+.top-back:hover{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);color:var(--purple);}
+
+/* ── MAIN ── */
+.main{position:relative;z-index:10;max-width:680px;margin:0 auto;padding:36px 24px 80px;}
+
+/* ── SELECTOR INICIAL ── */
+#screen-selector{animation:fadeIn .35s ease;}
+.selector-hero{text-align:center;margin-bottom:36px;}
+.page-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(91,156,246,0.1);border:1px solid rgba(91,156,246,0.22);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
+.page-title{font-family:'Fraunces',serif;font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1.15;margin-bottom:8px;}
+.page-subtitle{font-size:13px;color:var(--text2);line-height:1.6;}
+
+.selector-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:520px){.selector-cards{grid-template-columns:1fr;}}
+
+.sel-card{background:var(--surface);border:1.5px solid var(--border);border-radius:22px;padding:28px 24px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden;}
+.sel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;opacity:0;transition:opacity .25s;}
+.sel-card-blue::before{background:linear-gradient(90deg,#1d4ed8,#5b9cf6);}
+.sel-card-green::before{background:linear-gradient(90deg,#059669,#34d399);}
+.sel-card:hover{transform:translateY(-3px);}
+.sel-card-blue:hover{border-color:rgba(91,156,246,0.4);box-shadow:0 16px 40px rgba(59,130,246,0.12);}
+.sel-card-blue:hover::before{opacity:1;}
+.sel-card-green:hover{border-color:rgba(52,211,153,0.4);box-shadow:0 16px 40px rgba(52,211,153,0.1);}
+.sel-card-green:hover::before{opacity:1;}
+.sel-card-emoji{font-size:36px;margin-bottom:14px;display:block;}
+.sel-card-title{font-family:'Fraunces',serif;font-size:19px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;}
+.sel-card-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* ── FORM SCREEN ── */
+#screen-venta,#screen-cobro{display:none;animation:fadeIn .35s ease;}
+#screen-venta.active,#screen-cobro.active{display:block;}
+
+/* back button */
+.form-back{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:7px 14px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;margin-bottom:24px;transition:all .2s;}
+.form-back:hover{background:rgba(255,255,255,0.07);color:var(--text);}
+
+/* ── PANEL ── */
+.ventas-panel{background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden;}
+.ventas-panel-header{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:13px;position:relative;}
+.ventas-panel-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.header-blue::before{background:linear-gradient(90deg,#1d4ed8,#5b9cf6);}
+.header-green::before{background:linear-gradient(90deg,#059669,#34d399);}
+.ventas-panel-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.icon-blue{background:rgba(91,156,246,0.13);border:1px solid rgba(91,156,246,0.22);}
+.icon-green{background:rgba(52,211,153,0.13);border:1px solid rgba(52,211,153,0.22);}
+.ventas-panel-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;letter-spacing:-.2px;}
+.ventas-panel-subtitle{font-size:11px;color:var(--text2);margin-top:3px;}
+.ventas-form{padding:26px 24px;}
+
+/* ── FORM FIELDS ── */
+.vf-row{margin-bottom:16px;}
+.vf-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:500px){.vf-row-2{grid-template-columns:1fr;}}
+.vf-field{display:flex;flex-direction:column;gap:6px;}
+.vf-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;}
+.vf-input,.vf-select,.vf-textarea{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:13px;color:var(--text);font-size:13.5px;font-family:'DM Sans',sans-serif;padding:0 14px;outline:none;transition:border-color .25s,background .25s,box-shadow .25s;width:100%;}
+.vf-input,.vf-select{height:46px;}
+.vf-textarea{padding:12px 14px;height:90px;resize:vertical;line-height:1.5;}
+.vf-input:focus,.vf-select:focus,.vf-textarea:focus{border-color:rgba(91,156,246,0.55);background:rgba(91,156,246,0.06);box-shadow:0 0 0 3px rgba(91,156,246,0.1);}
+.vf-input-green:focus,.vf-select-green:focus,.vf-textarea-green:focus{border-color:rgba(52,211,153,0.55)!important;background:rgba(52,211,153,0.05)!important;box-shadow:0 0 0 3px rgba(52,211,153,0.09)!important;}
+.vf-input::placeholder,.vf-textarea::placeholder{color:rgba(138,154,184,0.35);}
+.vf-select option{background:#0d1119;color:var(--text);}
+.vf-hint{font-size:11px;color:var(--text2);margin-top:2px;}
+.vf-divider{height:1px;background:rgba(255,255,255,0.05);margin:20px 0;}
+
+/* ── CLIENTE NUEVO BOX ── */
+.nuevo-cliente-box{background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:18px;margin-top:14px;animation:fadeIn .3s ease;}
+.nuevo-cliente-title{font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+
+/* ── SALDO BOX ── */
+.vf-saldo-box{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18);border-radius:13px;padding:14px 18px;margin-bottom:16px;animation:fadeIn .3s ease;}
+
+/* ── CALCULADORA ── */
+.vf-calc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;}
+@media(max-width:500px){.vf-calc-row{grid-template-columns:1fr 1fr;}}
+.vf-calc-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:13px 15px;transition:border-color .25s;}
+.vf-calc-box.lit{border-color:rgba(91,156,246,0.2);}
+.vf-calc-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.vf-calc-value{font-size:15px;font-weight:700;font-family:'Fraunces',serif;letter-spacing:-.3px;}
+.vf-calc-blue{color:var(--blue);}
+.vf-calc-green{color:var(--green);}
+.vf-calc-gold{color:var(--gold);}
+
+/* ── CUOTAS ── */
+.vf-cuotas-section{margin-bottom:16px;}
+.vf-cuotas-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.vf-cuotas-grid{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px;}
+.vf-cuotas-grid::-webkit-scrollbar{width:4px;}
+.vf-cuotas-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+.vf-cuota-row{display:grid;grid-template-columns:60px 1fr 1fr;gap:8px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 12px;}
+.vf-cuota-num{font-size:11px;font-weight:700;color:var(--text2);}
+.vf-cuota-input{height:34px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;padding:0 10px;outline:none;width:100%;transition:border-color .2s;}
+.vf-cuota-input:focus{border-color:rgba(91,156,246,0.45);}
+
+/* ── MONTO ROW ── */
+.monto-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;}
+.monto-suffix{font-size:12px;font-weight:600;color:var(--text2);padding-bottom:14px;white-space:nowrap;}
+
+/* ── BUTTONS ── */
+.vf-submit-btn{width:100%;height:52px;border-radius:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .3s;letter-spacing:.3px;}
+.vf-submit-btn-blue{background:linear-gradient(135deg,#1d4ed8,#5b9cf6);color:#fff;box-shadow:0 8px 24px rgba(59,130,246,0.3);}
+.vf-submit-btn-blue:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 36px rgba(59,130,246,0.4);}
+.vf-submit-btn-green{background:linear-gradient(135deg,#059669,#34d399);color:#fff;box-shadow:0 8px 24px rgba(52,211,153,0.25);}
+.vf-submit-btn-green:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 36px rgba(52,211,153,0.35);}
+.vf-submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── TOASTS ── */
+.vf-toast{margin-top:12px;padding:13px 16px;border-radius:12px;font-size:13px;display:none;align-items:center;gap:8px;line-height:1.4;}
+.vf-toast.show{display:flex;animation:fadeIn .3s ease;}
+.vf-toast-ok{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.28);color:var(--green);}
+.vf-toast-err{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.28);color:var(--red);}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+
+@media(max-width:600px){
+  .main{padding:20px 14px 48px;}
+  .page-title{font-size:24px;}
+  .top-bar{padding:0 16px;}
+  .ventas-form{padding:18px 16px;}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-brand">
+    <div class="top-brand-icon">🛍️</div>
+    <div>
+      <div class="top-brand-name">ALLSHOP</div>
+      <div class="top-brand-sub">Ventas &amp; Cobros</div>
+    </div>
+  </div>
+  <a class="top-back" href="index.html">← Volver al Panel</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ══ PANTALLA SELECTOR ══ -->
+  <div id="screen-selector">
+    <div class="selector-hero">
+      <div class="page-badge">🛒 Operaciones</div>
+      <div class="page-title">¿Qué querés registrar?</div>
+      <div class="page-subtitle">Seleccioná una operación para continuar.</div>
+    </div>
+    <div class="selector-cards">
+      <div class="sel-card sel-card-blue" onclick="mostrarPantalla('venta')">
+        <span class="sel-card-emoji">🛒</span>
+        <div class="sel-card-title">Nueva Venta</div>
+        <div class="sel-card-desc">Registrá una venta nueva, en cuotas o contado. Se guarda en Base General y Cuotero.</div>
+      </div>
+      <div class="sel-card sel-card-green" onclick="mostrarPantalla('cobro')">
+        <span class="sel-card-emoji">💵</span>
+        <div class="sel-card-title">Registrar Cobro</div>
+        <div class="sel-card-desc">Marcá un pago recibido de un cliente existente. Descuenta del saldo en Cuotero.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANTALLA VENTA ══ -->
+  <div id="screen-venta">
+    <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+    <div class="ventas-panel">
+      <div class="ventas-panel-header header-blue">
+        <div class="ventas-panel-icon icon-blue">🛒</div>
+        <div>
+          <div class="ventas-panel-title">Nueva Venta</div>
+          <div class="ventas-panel-subtitle">Registra en BASE GENERAL y CUOTERO</div>
+        </div>
+      </div>
+      <div class="ventas-form">
+
+        <!-- Fecha + Cliente -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Fecha</label>
+            <input class="vf-input" type="date" id="vf-fecha">
+          </div>
+          <div class="vf-field">
+            <label class="vf-label">Cliente</label>
+            <select class="vf-select" id="vf-nombre-sel" onchange="vfManejarCliente(this.value)">
+              <option value="">— Seleccioná cliente —</option>
+              <option value="__nuevo__">➕ Cliente nuevo</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Nuevo cliente box -->
+        <div id="vf-nuevo-cliente-box" class="nuevo-cliente-box" style="display:none;">
+          <div class="nuevo-cliente-title">✨ Nuevo Cliente</div>
+          <div class="vf-field">
+            <label class="vf-label">Nombre del cliente</label>
+            <input class="vf-input" type="text" id="vf-nombre-nuevo" placeholder="Ej: MARIA GOMEZ" oninput="this.value=this.value.toUpperCase()">
+            <span class="vf-hint">Se va a crear automáticamente en el sistema</span>
+          </div>
+        </div>
+
+        <div class="vf-divider"></div>
+
+        <!-- Persona / Empresa -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Persona / Tipo</label>
+            <select class="vf-select" id="vf-persona">
+              <option value="">— Seleccioná —</option>
+              <option>TRABAJO</option>
+              <option>FAMILIA</option>
+              <option>AMIGO</option>
+              <option>FACULTAD</option>
+              <option>OTRO</option>
+            </select>
+          </div>
+          <div class="vf-field">
+            <label class="vf-label">Empresa</label>
+            <input class="vf-input" type="text" id="vf-empresa" placeholder="Ej: META SPORT" oninput="this.value=this.value.toUpperCase()">
+          </div>
+        </div>
+
+        <!-- Producto / Categoría -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Categoría</label>
+            <select class="vf-select" id="vf-producto" onchange="vfCheckOtraCategoria(this.value)">
+              <option value="">— Seleccioná —</option>
+              <option>CALZADO</option>
+              <option>ROPA</option>
+              <option>ACCESORIOS</option>
+              <option>ELECTRONICA</option>
+              <option>PERFUMERIA</option>
+              <option>OTRO</option>
+            </select>
+          </div>
+          <div class="vf-field" id="vf-producto-otro-field" style="display:none;">
+            <label class="vf-label">Especificar categoría</label>
+            <input class="vf-input" type="text" id="vf-producto-otro" placeholder="Ej: JUGUETES" oninput="this.value=this.value.toUpperCase()">
+          </div>
+        </div>
+
+        <!-- Observación -->
+        <div class="vf-row">
+          <div class="vf-field">
+            <label class="vf-label">Observación</label>
+            <textarea class="vf-textarea" id="vf-obs" placeholder="Ej: NIKE AIR MAX TALLE 42, COLOR NEGRO&#10;Detalle del producto, número de pedido, etc." oninput="this.value=this.value.toUpperCase()"></textarea>
+          </div>
+        </div>
+
+        <div class="vf-divider"></div>
+
+        <!-- Precios -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Costo Real Gs.</label>
+            <input class="vf-input" type="number" id="vf-precioreal" placeholder="480000" oninput="vfRecalc()">
+          </div>
+          <div class="vf-field">
+            <label class="vf-label">Precio Venta Gs.</label>
+            <input class="vf-input" type="number" id="vf-precioventa" placeholder="600000" oninput="vfRecalc()">
+          </div>
+        </div>
+        <div class="vf-row">
+          <div class="vf-field">
+            <label class="vf-label">Margen %</label>
+            <input class="vf-input" type="number" id="vf-porcentaje" placeholder="Ej: 20" step="0.1" oninput="vfRecalcFromPct()" style="max-width:200px;">
+            <span class="vf-hint">Podés ingresar el % y se calcula el precio de venta automáticamente</span>
+          </div>
+        </div>
+
+        <div class="vf-calc-row">
+          <div class="vf-calc-box" id="calc-descuento">
+            <div class="vf-calc-label">Descuento Gs.</div>
+            <div class="vf-calc-value vf-calc-blue" id="vf-disp-descuento">—</div>
+          </div>
+          <div class="vf-calc-box" id="calc-ganancia">
+            <div class="vf-calc-label">Ganancia Gs.</div>
+            <div class="vf-calc-value vf-calc-green" id="vf-disp-ganancias">—</div>
+          </div>
+          <div class="vf-calc-box" id="calc-movimiento">
+            <div class="vf-calc-label">Movimiento Gs.</div>
+            <div class="vf-calc-value vf-calc-gold" id="vf-disp-movimiento">—</div>
+          </div>
+        </div>
+
+        <div class="vf-divider"></div>
+
+        <!-- Anticipo + Cuotas -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Anticipo Gs.</label>
+            <input class="vf-input" type="number" id="vf-anticipo" placeholder="0" value="0">
+          </div>
+          <div class="vf-field">
+            <label class="vf-label">N° de Cuotas</label>
+            <select class="vf-select" id="vf-ncuotas" onchange="vfGenerarCuotas()">
+              <option value="0">Contado (sin cuotas)</option>
+              <option value="1">1 cuota</option>
+              <option value="2">2 cuotas</option>
+              <option value="3">3 cuotas</option>
+              <option value="4">4 cuotas</option>
+              <option value="5">5 cuotas</option>
+              <option value="6">6 cuotas</option>
+              <option value="9">9 cuotas</option>
+              <option value="12">12 cuotas</option>
+              <option value="18">18 cuotas</option>
+              <option value="24">24 cuotas</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="vf-montocuota-row" style="display:none;" class="vf-row">
+          <div class="vf-field">
+            <label class="vf-label">Monto por Cuota Gs.</label>
+            <input class="vf-input" type="number" id="vf-montocuota" placeholder="Auto" oninput="vfSyncCuotaManual()">
+            <span class="vf-hint">Se calcula automáticamente según precio y anticipo</span>
+          </div>
+        </div>
+
+        <!-- Cuotas dinámicas -->
+        <div id="vf-cuotas-section" style="display:none;" class="vf-cuotas-section">
+          <div class="vf-cuotas-label">Fechas &amp; Montos de Cuotas</div>
+          <div class="vf-cuotas-grid" id="vf-cuotas-grid"></div>
+        </div>
+
+        <button class="vf-submit-btn vf-submit-btn-blue" id="vf-btn-venta" onclick="vfEnviarVenta()">
+          <span>🛒</span>
+          <span id="vf-btn-venta-label">Registrar Venta</span>
+          <div class="btn-spinner" id="vf-spinner-venta" style="display:none;"></div>
+        </button>
+        <div class="vf-toast" id="vf-toast-venta"></div>
+
+      </div>
+    </div>
+  </div><!-- end screen-venta -->
+
+  <!-- ══ PANTALLA COBRO ══ -->
+  <div id="screen-cobro">
+    <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+    <div class="ventas-panel">
+      <div class="ventas-panel-header header-green">
+        <div class="ventas-panel-icon icon-green">💵</div>
+        <div>
+          <div class="ventas-panel-title">Registrar Cobro</div>
+          <div class="ventas-panel-subtitle">Descuenta cuota o pago parcial en CUOTERO</div>
+        </div>
+      </div>
+      <div class="ventas-form">
+
+        <!-- Cliente -->
+        <div class="vf-row">
+          <div class="vf-field">
+            <label class="vf-label">Cliente</label>
+            <select class="vf-select vf-select-green" id="pf-nombre-sel" onchange="pfSeleccionarCliente(this.value)">
+              <option value="">— Seleccioná cliente —</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Saldo -->
+        <div id="pf-saldo-box" class="vf-saldo-box" style="display:none;">
+          <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Deuda actual del cliente</div>
+          <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--red);" id="pf-saldo-valor">—</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;" id="pf-cuotas-pendientes">—</div>
+        </div>
+
+        <!-- Fecha + Monto -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Fecha del Cobro</label>
+            <input class="vf-input vf-input-green" type="date" id="pf-fecha">
+          </div>
+          <div class="vf-field">
+            <label class="vf-label">Monto Cobrado Gs.</label>
+            <input class="vf-input vf-input-green" type="number" id="pf-monto" placeholder="250000">
+          </div>
+        </div>
+
+        <!-- Producto + Persona -->
+        <div class="vf-row vf-row-2">
+          <div class="vf-field">
+            <label class="vf-label">Categoría</label>
+            <select class="vf-select vf-select-green" id="pf-producto">
+              <option value="">— Seleccioná —</option>
+              <option>CALZADO</option>
+              <option>ROPA</option>
+              <option>ACCESORIOS</option>
+              <option>ELECTRONICA</option>
+              <option>PERFUMERIA</option>
+              <option>OTRO</option>
+            </select>
+          </div>
+          <div class="vf-field">
+            <label class="vf-label">Persona / Tipo</label>
+            <select class="vf-select vf-select-green" id="pf-persona">
+              <option value="">— Seleccioná —</option>
+              <option>TRABAJO</option>
+              <option>FAMILIA</option>
+              <option>AMIGO</option>
+              <option>FACULTAD</option>
+              <option>OTRO</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Empresa -->
+        <div class="vf-row">
+          <div class="vf-field">
+            <label class="vf-label">Empresa</label>
+            <input class="vf-input vf-input-green" type="text" id="pf-empresa" placeholder="Ej: META SPORT" oninput="this.value=this.value.toUpperCase()">
+          </div>
+        </div>
+
+        <!-- Observación -->
+        <div class="vf-row">
+          <div class="vf-field">
+            <label class="vf-label">Observación</label>
+            <textarea class="vf-textarea vf-textarea-green" id="pf-obs" placeholder="Ej: CUOTA 1/3 NIKE AIR MAX&#10;Podés aclarar qué cuota es, o cualquier detalle del cobro." oninput="this.value=this.value.toUpperCase()"></textarea>
+          </div>
+        </div>
+
+        <button class="vf-submit-btn vf-submit-btn-green" id="vf-btn-pago" onclick="vfEnviarPago()">
+          <span>💵</span>
+          <span id="vf-btn-pago-label">Registrar Cobro</span>
+          <div class="btn-spinner" id="vf-spinner-pago" style="display:none;"></div>
+        </button>
+        <div class="vf-toast" id="vf-toast-pago"></div>
+
+      </div>
+    </div>
+  </div><!-- end screen-cobro -->
+
+</div><!-- end main -->
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvGh69zMLmcxHCnmwEx_1SpeP1qOoBTLIKRZ_qnIo5Zq33gf0TOeeZDeDQex2zF4CS/exec';
+const SHEET_CUOTERO_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv4sJRpZ7wf2dHKkkGpYkhAt1F0ysyRzvHwkNdw05r1APa7nO8ZFDSRmJ7SoQ64wSk8idaVYt0iu5-/pub?gid=900301684&single=true&output=csv';
+
+let cuoteroRows = [];
+
+// ── Fecha default hoy ──
+(function setDates() {
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('vf-fecha').value = hoy;
+  document.getElementById('pf-fecha').value = hoy;
+})();
+
+// ── Cargar CUOTERO ──
+async function cargarCuotero() {
+  try {
+    const res  = await fetch(SHEET_CUOTERO_URL);
+    const text = await res.text();
+    cuoteroRows = parseCSV(text);
+    poblarSelectoresClientes();
+  } catch(e) {
+    console.warn('No se pudo cargar el CUOTERO:', e.message);
+  }
+}
+cargarCuotero();
+
+function poblarSelectoresClientes() {
+  const clientes = cuoteroRows.slice(1)
+    .map(r => r[0]?.toString().trim().toUpperCase())
+    .filter(Boolean)
+    .sort();
+
+  // selector venta
+  const selVenta = document.getElementById('vf-nombre-sel');
+  // mantener primeras 2 opciones (placeholder + nuevo)
+  while(selVenta.options.length > 2) selVenta.remove(2);
+  clientes.forEach(c => {
+    const o = new Option(c, c);
+    selVenta.add(o);
+  });
+
+  // selector cobro
+  const selCobro = document.getElementById('pf-nombre-sel');
+  while(selCobro.options.length > 1) selCobro.remove(1);
+  clientes.forEach(c => {
+    const o = new Option(c, c);
+    selCobro.add(o);
+  });
+}
+
+function parseCSV(text) {
+  const rows=[];
+  for(const line of text.split(/\r?\n/)){
+    if(!line.trim()) continue;
+    const cells=[]; let cur='', inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){inQ=!inQ;}
+      else if(ch===','&&!inQ){cells.push(cur.trim());cur='';}
+      else{cur+=ch;}
+    }
+    cells.push(cur.trim());
+    rows.push(cells);
+  }
+  return rows;
+}
+function parseMontoPY(str) {
+  if(!str) return 0;
+  let s = str.toString().trim();
+  if(!s || s==='-' || s==='0') return 0;
+  const isNeg = s.startsWith('-');
+  s = s.replace(/^-/,'');
+  // Formato PY: puntos como miles, coma como decimal (ej: 3.286.400 o 410.800 o 403,750)
+  // Primero eliminar puntos de miles, luego coma decimal
+  s = s.replace(/\./g, '').replace(',', '.');
+  const num = parseFloat(s) || 0;
+  return isNeg ? -num : num;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// NAVEGACIÓN ENTRE PANTALLAS
+// ══════════════════════════════════════════════════════════════════
+function mostrarPantalla(pantalla) {
+  document.getElementById('screen-selector').style.display = 'none';
+  document.getElementById('screen-venta').style.display    = 'none';
+  document.getElementById('screen-cobro').style.display    = 'none';
+  if(pantalla === 'selector') {
+    document.getElementById('screen-selector').style.display = 'block';
+  } else if(pantalla === 'venta') {
+    document.getElementById('screen-venta').style.display = 'block';
+    document.getElementById('screen-venta').classList.add('active');
+  } else if(pantalla === 'cobro') {
+    document.getElementById('screen-cobro').style.display = 'block';
+    document.getElementById('screen-cobro').classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════════════════════════════
+// VENTA — manejo de cliente nuevo
+// ══════════════════════════════════════════════════════════════════
+function vfManejarCliente(val) {
+  const box = document.getElementById('vf-nuevo-cliente-box');
+  box.style.display = val === '__nuevo__' ? 'block' : 'none';
+  if(val !== '__nuevo__') {
+    document.getElementById('vf-nombre-nuevo').value = '';
+  }
+}
+
+function vfGetNombre() {
+  const sel = document.getElementById('vf-nombre-sel').value;
+  if(sel === '__nuevo__') {
+    return document.getElementById('vf-nombre-nuevo').value.trim().toUpperCase();
+  }
+  return sel.trim().toUpperCase();
+}
+
+// ── Categoría "OTRO" → mostrar campo texto ──
+function vfCheckOtraCategoria(val) {
+  const field = document.getElementById('vf-producto-otro-field');
+  field.style.display = val === 'OTRO' ? 'flex' : 'none';
+}
+function vfGetProducto() {
+  const sel = document.getElementById('vf-producto').value;
+  if(sel === 'OTRO') {
+    return document.getElementById('vf-producto-otro').value.trim().toUpperCase() || 'OTRO';
+  }
+  return sel;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// COBRO — seleccionar cliente y mostrar saldo
+// ══════════════════════════════════════════════════════════════════
+function pfSeleccionarCliente(name) {
+  const nameUp = name.trim().toUpperCase();
+  const box = document.getElementById('pf-saldo-box');
+  if(!nameUp || cuoteroRows.length < 2){ box.style.display='none'; return; }
+
+  const headers = cuoteroRows[0]; // fila 0 = encabezados
+  const row = cuoteroRows.slice(1).find(r => r[0] && r[0].toString().toUpperCase() === nameUp);
+  if(!row){ box.style.display='none'; return; }
+
+  const saldo      = parseMontoPY(row[1]); // col B = SUM de MOVIMIENTOS
+  const cantCuotas = parseInt(row[2]) || 0; // col C = cant cuota
+  const montoCuota = parseMontoPY(row[3]);  // col D = monto cuota
+
+  // Columnas E en adelante = meses (encabezado = "junio 2026", "julio 2026", etc.)
+  const mesesHTML = [];
+  for(let i = 4; i < headers.length; i++){
+    const mes   = headers[i]?.toString().trim();
+    const valor = parseMontoPY(row[i]);
+    if(mes && valor > 0){
+      mesesHTML.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <span style="font-size:11px;color:var(--text2);text-transform:capitalize;">${mes}</span>
+        <span style="font-size:12px;font-weight:700;color:var(--gold);">${valor.toLocaleString('es-PY')} Gs.</span>
+      </div>`);
+    }
+  }
+
+  box.style.display = 'block';
+  box.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:${mesesHTML.length?'14px':'0'};">
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Deuda total</div>
+        <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--red);">${Math.abs(saldo).toLocaleString('es-PY')} Gs.</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Cuotas · Monto</div>
+        <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);">${cantCuotas} × ${montoCuota > 0 ? montoCuota.toLocaleString('es-PY')+' Gs.' : '—'}</div>
+      </div>
+    </div>
+    ${mesesHTML.length ? `
+      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">📅 Pagos por mes</div>
+      ${mesesHTML.join('')}
+    ` : ''}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CALCULADORA VENTA
+// ══════════════════════════════════════════════════════════════════
+function vfRecalc() {
+  const costo = parseFloat(document.getElementById('vf-precioreal').value)  || 0;
+  const venta = parseFloat(document.getElementById('vf-precioventa').value) || 0;
+  const pct   = parseFloat(document.getElementById('vf-porcentaje').value) / 100 || 0;
+  if(costo > 0 && venta > 0) {
+    const descuento = Math.round(costo * pct);
+    const ganancia  = venta - (costo - descuento); // ✅ CORREGIDO: venta - costo neto
+    document.getElementById('vf-disp-descuento').textContent  = descuento > 0 ? descuento.toLocaleString('es-PY') + ' Gs.' : '—';
+    document.getElementById('vf-disp-ganancias').textContent  = ganancia.toLocaleString('es-PY') + ' Gs.';
+    document.getElementById('vf-disp-movimiento').textContent = venta.toLocaleString('es-PY') + ' Gs.';
+    ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.add('lit'));
+  } else {
+    document.getElementById('vf-disp-descuento').textContent  = '—';
+    document.getElementById('vf-disp-ganancias').textContent  = '—';
+    document.getElementById('vf-disp-movimiento').textContent = '—';
+    ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.remove('lit'));
+  }
+  vfGenerarCuotas();
+}
+function vfRecalcFromPct() {
+  vfRecalc();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CUOTAS DINÁMICAS
+// ══════════════════════════════════════════════════════════════════
+function vfGenerarCuotas() {
+  const n    = parseInt(document.getElementById('vf-ncuotas').value) || 0;
+  const sec  = document.getElementById('vf-cuotas-section');
+  const grid = document.getElementById('vf-cuotas-grid');
+  const mcRow= document.getElementById('vf-montocuota-row');
+  const venta    = parseFloat(document.getElementById('vf-precioventa').value) || 0;
+  const anticipo = parseFloat(document.getElementById('vf-anticipo').value)    || 0;
+
+  if(n <= 0){
+    sec.style.display  = 'none';
+    mcRow.style.display= 'none';
+    grid.innerHTML     = '';
+    document.getElementById('vf-montocuota').value = '';
+    return;
+  }
+  const mc = Math.round((venta - anticipo) / n);
+  document.getElementById('vf-montocuota').value = mc || '';
+  sec.style.display   = 'block';
+  mcRow.style.display = 'block';
+  grid.innerHTML      = '';
+  const hoy = new Date();
+  for(let i=1;i<=n;i++){
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() + i, 1);
+    const fechaStr = d.toISOString().split('T')[0];
+    grid.innerHTML += `<div class="vf-cuota-row">
+      <span class="vf-cuota-num">Cuota ${i}</span>
+      <input class="vf-cuota-input" type="date" id="vf-cuota-fecha-${i}" value="${fechaStr}">
+      <input class="vf-cuota-input" type="number" id="vf-cuota-monto-${i}" value="${mc}" placeholder="Monto">
+    </div>`;
+  }
+}
+function vfSyncCuotaManual() {
+  const n  = parseInt(document.getElementById('vf-ncuotas').value)     || 0;
+  const mc = parseFloat(document.getElementById('vf-montocuota').value) || 0;
+  for(let i=1;i<=n;i++){
+    const el = document.getElementById(`vf-cuota-monto-${i}`);
+    if(el) el.value = mc;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════════
+function vfFechaASerial(fechaStr) {
+  const d = new Date(fechaStr + 'T12:00:00');
+  return Math.floor((d - new Date(1899,11,30)) / 86400000);
+}
+function vfToast(id, ok, msg) {
+  const el = document.getElementById(id);
+  el.className = 'vf-toast show ' + (ok ? 'vf-toast-ok' : 'vf-toast-err');
+  el.innerHTML = (ok ? '✅' : '⚠️') + ' ' + msg;
+  setTimeout(() => el.classList.remove('show'), 7000);
+}
+function setBtnLoading(btnId, spinnerId, labelId, loading, label) {
+  document.getElementById(btnId).disabled = loading;
+  document.getElementById(spinnerId).style.display = loading ? 'block' : 'none';
+  document.getElementById(labelId).textContent = loading ? 'Enviando…' : label;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ENVIAR VENTA
+// ══════════════════════════════════════════════════════════════════
+async function vfEnviarVenta() {
+  const fecha      = document.getElementById('vf-fecha').value;
+  const nombre     = vfGetNombre();
+  const persona    = document.getElementById('vf-persona').value.trim().toUpperCase();
+  const empresa    = document.getElementById('vf-empresa').value.trim().toUpperCase();
+  const producto   = vfGetProducto();
+  const obs        = document.getElementById('vf-obs').value.trim().toUpperCase();
+  const precioReal = parseFloat(document.getElementById('vf-precioreal').value)  || 0;
+  const precioVenta= parseFloat(document.getElementById('vf-precioventa').value) || 0;
+  const porcentaje = parseFloat(document.getElementById('vf-porcentaje').value) / 100 || 0;
+  const anticipo   = parseFloat(document.getElementById('vf-anticipo').value)   || 0;
+  const nCuotas    = parseInt(document.getElementById('vf-ncuotas').value)       || 0;
+  const montoCuota = parseFloat(document.getElementById('vf-montocuota').value)  || 0;
+
+  if(!fecha || !nombre || precioVenta <= 0){
+    vfToast('vf-toast-venta', false, 'Completá fecha, cliente y precio de venta.');
+    return;
+  }
+  const descuento = Math.round(precioReal * porcentaje);
+  const ganancia  = precioVenta - (precioReal - descuento); // ✅ CORREGIDO: precioVenta - costo neto
+  const cuotas = [];
+  for(let i=1;i<=nCuotas;i++){
+    const f = document.getElementById(`vf-cuota-fecha-${i}`)?.value || '';
+    const m = parseFloat(document.getElementById(`vf-cuota-monto-${i}`)?.value) || montoCuota;
+    if(f) cuotas.push({ num:i, fecha:f, monto:m });
+  }
+
+  const payload = {
+    tipo:'VENTA', fecha:vfFechaASerial(fecha),
+    nombre, persona, empresa, producto, observacion:obs,
+    movimiento:precioVenta, precioReal, porcentaje,
+    margen:descuento, ganancias:ganancia, anticipo, nCuotas, montoCuota, cuotas
+  };
+
+  setBtnLoading('vf-btn-venta','vf-spinner-venta','vf-btn-venta-label',true);
+  try {
+    const res  = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+    const json = await res.json();
+    if(json.ok){
+      vfToast('vf-toast-venta', true, `Venta de <strong>${nombre}</strong> registrada — ${precioVenta.toLocaleString('es-PY')} Gs. ✅`);
+      limpiarVenta();
+      cargarCuotero();
+    } else {
+      vfToast('vf-toast-venta', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
+    }
+  } catch(e) {
+    vfToast('vf-toast-venta', false, 'Error de conexión: ' + e.message);
+  } finally {
+    setBtnLoading('vf-btn-venta','vf-spinner-venta','vf-btn-venta-label',false,'Registrar Venta');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ENVIAR COBRO
+// ══════════════════════════════════════════════════════════════════
+async function vfEnviarPago() {
+  const nombre  = document.getElementById('pf-nombre-sel').value.trim().toUpperCase();
+  const fecha   = document.getElementById('pf-fecha').value;
+  const monto   = parseFloat(document.getElementById('pf-monto').value) || 0;
+  const producto= document.getElementById('pf-producto').value.trim().toUpperCase();
+  const persona = document.getElementById('pf-persona').value.trim().toUpperCase();
+  const obs     = document.getElementById('pf-obs').value.trim().toUpperCase();
+  const empresa = document.getElementById('pf-empresa').value.trim().toUpperCase();
+
+  if(!nombre || !fecha || monto <= 0){
+    vfToast('vf-toast-pago', false, 'Seleccioná un cliente, fecha y monto del cobro.');
+    return;
+  }
+
+  const payload = {
+    tipo:'PAGO', fecha:vfFechaASerial(fecha),
+    nombre, persona, empresa, producto, observacion:obs,
+    movimiento:-Math.abs(monto)
+  };
+
+  setBtnLoading('vf-btn-pago','vf-spinner-pago','vf-btn-pago-label',true);
+  try {
+    const res  = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+    const json = await res.json();
+    if(json.ok){
+      vfToast('vf-toast-pago', true, `Cobro de <strong>${monto.toLocaleString('es-PY')} Gs.</strong> registrado para ${nombre} ✅`);
+      limpiarPago();
+      cargarCuotero();
+    } else {
+      vfToast('vf-toast-pago', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
+    }
+  } catch(e) {
+    vfToast('vf-toast-pago', false, 'Error de conexión: ' + e.message);
+  } finally {
+    setBtnLoading('vf-btn-pago','vf-spinner-pago','vf-btn-pago-label',false,'Registrar Cobro');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// LIMPIAR FORMULARIOS
+// ══════════════════════════════════════════════════════════════════
+function limpiarVenta() {
+  document.getElementById('vf-nombre-sel').value = '';
+  document.getElementById('vf-nombre-nuevo').value = '';
+  document.getElementById('vf-nuevo-cliente-box').style.display = 'none';
+  ['vf-empresa','vf-precioreal','vf-precioventa','vf-porcentaje','vf-obs','vf-producto-otro']
+    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('vf-anticipo').value = '0';
+  document.getElementById('vf-persona').value  = '';
+  document.getElementById('vf-producto').value = '';
+  document.getElementById('vf-ncuotas').value  = '0';
+  document.getElementById('vf-producto-otro-field').style.display = 'none';
+  document.getElementById('vf-cuotas-section').style.display  = 'none';
+  document.getElementById('vf-montocuota-row').style.display  = 'none';
+  document.getElementById('vf-cuotas-grid').innerHTML = '';
+  ['vf-disp-descuento','vf-disp-ganancias','vf-disp-movimiento'].forEach(id=>{
+    document.getElementById(id).textContent='—';
+  });
+  ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.remove('lit'));
+  document.getElementById('vf-fecha').value = new Date().toISOString().split('T')[0];
+}
+function limpiarPago() {
+  document.getElementById('pf-nombre-sel').value = '';
+  ['pf-monto','pf-empresa','pf-obs'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('pf-producto').value = '';
+  document.getElementById('pf-persona').value  = '';
+  const sb = document.getElementById('pf-saldo-box'); sb.style.display='none'; sb.innerHTML='';
+  document.getElementById('pf-fecha').value = new Date().toISOString().split('T')[0];
+}
+</script>
+</body>
+</html>
