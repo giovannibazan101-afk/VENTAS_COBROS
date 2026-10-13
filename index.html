@@ -662,7 +662,7 @@ cargarDatos();
 function saldoPendienteCredito(idCredito) {
  return cuotasRows.slice(1)
  .filter(r => r[1] === idCredito && r[7] !== 'PAGADA')
- .reduce((acc, r) => acc + parseMontoPY(r[6]), 0);
+ .reduce((acc, r) => acc + parseMontoPY(r[6]), 0); // Corregido: r[6] es SALDO_PENDIENTE
 }
 
 function historialPagosCredito(idCredito) {
@@ -851,10 +851,22 @@ async function compartirDeudaCliente(idx) {
  let mensaje = `*ESTADO DE DEUDA — ALLSHOP*\n\n`;
  mensaje += `👤 Cliente: *${c.nombre}*\n`;
  mensaje += `💰 Deuda Total: *Gs. ${c.total.toLocaleString('es-PY')}*\n`;
+
  if (c.creditos.length) {
- mensaje += `\n*Detalle de Créditos:*\n`;
+ mensaje += `\n*Detalle de Créditos y Cuotas Pendientes:*\n`;
  c.creditos.forEach(cr => {
- mensaje += `• ${cr.producto} (${cr.idCredito}): Gs. ${cr.saldo.toLocaleString('es-PY')}\n`;
+ mensaje += `\n📦 *${cr.producto}* (${cr.idCredito})\n`;
+ mensaje += `  Saldo Crédito: Gs. ${cr.saldo.toLocaleString('es-PY')}\n`;
+ 
+ // Cuotas pendientes del crédito
+ const cuotasPend = cuotasRows.slice(1).filter(r => r[1] === cr.idCredito && r[7] !== 'PAGADA');
+ if (cuotasPend.length > 0) {
+ mensaje += `  _Cuotas pendientes (${cuotasPend.length}):_\n`;
+ cuotasPend.forEach(q => {
+ const saldoQ = parseMontoPY(q[6]);
+ mensaje += `  • Cuota ${q[3]} (Vence: ${q[4]}): Gs. ${saldoQ.toLocaleString('es-PY')}\n`;
+ });
+ }
  });
  }
  mensaje += `\n_Agradecemos tu preferencia._`;
