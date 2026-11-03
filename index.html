@@ -6,15 +6,18 @@
 <title>AllShop — Ventas & Cobros</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
-  --bg:#07090f;--bg2:#0d1119;
-  --surface:rgba(255,255,255,0.035);--surface2:rgba(255,255,255,0.065);
-  --blue:#5b9cf6;--blue2:#3b82f6;--teal:#2dd4bf;
-  --gold:#f59e0b;--gold2:#fbbf24;--purple:#a78bfa;
-  --border:rgba(255,255,255,0.07);--border2:rgba(91,156,246,0.3);
-  --text:#e4eaf7;--text2:#8a9ab8;--red:#f87171;--green:#34d399;
-  --radius:18px;--radius-sm:12px;
+ --bg:#07090f;--bg2:#0d1119;
+ --surface:rgba(255,255,255,0.035);--surface2:rgba(255,255,255,0.065);
+ --blue:#5b9cf6;--blue2:#3b82f6;--teal:#2dd4bf;
+ --gold:#f59e0b;--gold2:#fbbf24;--purple:#a78bfa;
+ --border:rgba(255,255,255,0.07);--border2:rgba(91,156,246,0.3);
+ --text:#e4eaf7;--text2:#8a9ab8;--red:#f87171;--green:#34d399;
+ --radius:18px;--radius-sm:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
@@ -24,7 +27,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .bg-glow-1{width:700px;height:700px;background:#3b82f6;top:-300px;left:-200px;}
 .bg-glow-2{width:600px;height:600px;background:#a78bfa;bottom:-200px;right:-200px;}
 
-/* ── TOP BAR ── */
+/* TOP BAR */
 .top-bar{height:60px;padding:0 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(7,9,15,.92);backdrop-filter:blur(24px);position:sticky;top:0;z-index:20;}
 .top-brand{display:flex;align-items:center;gap:10px;}
 .top-brand-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 12px rgba(124,58,237,0.35);}
@@ -33,10 +36,10 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .top-back{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:9px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.04);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;}
 .top-back:hover{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);color:var(--purple);}
 
-/* ── MAIN ── */
+/* MAIN */
 .main{position:relative;z-index:10;max-width:680px;margin:0 auto;padding:36px 24px 80px;}
 
-/* ── SELECTOR INICIAL ── */
+/* SELECTOR INICIAL */
 #screen-selector{animation:fadeIn .35s ease;}
 .selector-hero{text-align:center;margin-bottom:36px;}
 .page-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(91,156,246,0.1);border:1px solid rgba(91,156,246,0.22);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
@@ -46,41 +49,54 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .selector-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:520px){.selector-cards{grid-template-columns:1fr;}}
 
-.sel-card{background:var(--surface);border:1.5px solid var(--border);border-radius:22px;padding:28px 24px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden;}
+.sel-card{background:var(--surface);border:1.5px solid var(--border);border-radius:22px;padding:24px 20px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden;}
 .sel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;opacity:0;transition:opacity .25s;}
 .sel-card-blue::before{background:linear-gradient(90deg,#1d4ed8,#5b9cf6);}
 .sel-card-green::before{background:linear-gradient(90deg,#059669,#34d399);}
+.sel-card-gold::before{background:linear-gradient(90deg,#d97706,#fbbf24);}
+.sel-card-teal::before{background:linear-gradient(90deg,#0d9488,#2dd4bf);}
+
 .sel-card:hover{transform:translateY(-3px);}
 .sel-card-blue:hover{border-color:rgba(91,156,246,0.4);box-shadow:0 16px 40px rgba(59,130,246,0.12);}
 .sel-card-blue:hover::before{opacity:1;}
 .sel-card-green:hover{border-color:rgba(52,211,153,0.4);box-shadow:0 16px 40px rgba(52,211,153,0.1);}
 .sel-card-green:hover::before{opacity:1;}
-.sel-card-emoji{font-size:36px;margin-bottom:14px;display:block;}
-.sel-card-title{font-family:'Fraunces',serif;font-size:19px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;}
+.sel-card-gold:hover{border-color:rgba(245,158,11,0.4);box-shadow:0 16px 40px rgba(245,158,11,0.1);}
+.sel-card-gold:hover::before{opacity:1;}
+.sel-card-teal:hover{border-color:rgba(45,212,191,0.4);box-shadow:0 16px 40px rgba(45,212,191,0.1);}
+.sel-card-teal:hover::before{opacity:1;}
+
+.sel-card-emoji{font-size:32px;margin-bottom:12px;display:block;}
+.sel-card-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;}
 .sel-card-desc{font-size:12px;color:var(--text2);line-height:1.5;}
 
-/* ── FORM SCREEN ── */
-#screen-venta,#screen-cobro{display:none;animation:fadeIn .35s ease;}
-#screen-venta.active,#screen-cobro.active{display:block;}
+/* FORM SCREENS */
+#screen-venta,#screen-cobro,#screen-deudas,#screen-flujo{display:none;animation:fadeIn .35s ease;}
+#screen-venta.active,#screen-cobro.active,#screen-deudas.active,#screen-flujo.active{display:block;}
 
-/* back button */
 .form-back{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:7px 14px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;margin-bottom:24px;transition:all .2s;}
 .form-back:hover{background:rgba(255,255,255,0.07);color:var(--text);}
 
-/* ── PANEL ── */
+/* PANEL */
 .ventas-panel{background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden;}
 .ventas-panel-header{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:13px;position:relative;}
 .ventas-panel-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
 .header-blue::before{background:linear-gradient(90deg,#1d4ed8,#5b9cf6);}
 .header-green::before{background:linear-gradient(90deg,#059669,#34d399);}
+.header-gold::before{background:linear-gradient(90deg,#d97706,#fbbf24);}
+.header-teal::before{background:linear-gradient(90deg,#0d9488,#2dd4bf);}
+
 .ventas-panel-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .icon-blue{background:rgba(91,156,246,0.13);border:1px solid rgba(91,156,246,0.22);}
 .icon-green{background:rgba(52,211,153,0.13);border:1px solid rgba(52,211,153,0.22);}
+.icon-gold{background:rgba(245,158,11,0.13);border:1px solid rgba(245,158,11,0.22);}
+.icon-teal{background:rgba(45,212,191,0.13);border:1px solid rgba(45,212,191,0.22);}
+
 .ventas-panel-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;letter-spacing:-.2px;}
 .ventas-panel-subtitle{font-size:11px;color:var(--text2);margin-top:3px;}
 .ventas-form{padding:26px 24px;}
 
-/* ── FORM FIELDS ── */
+/* FORM FIELDS */
 .vf-row{margin-bottom:16px;}
 .vf-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 @media(max-width:500px){.vf-row-2{grid-template-columns:1fr;}}
@@ -96,14 +112,14 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .vf-hint{font-size:11px;color:var(--text2);margin-top:2px;}
 .vf-divider{height:1px;background:rgba(255,255,255,0.05);margin:20px 0;}
 
-/* ── CLIENTE NUEVO BOX ── */
+/* CLIENTE NUEVO BOX */
 .nuevo-cliente-box{background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:18px;margin-top:14px;animation:fadeIn .3s ease;}
 .nuevo-cliente-title{font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
 
-/* ── SALDO BOX ── */
+/* SALDO BOX */
 .vf-saldo-box{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18);border-radius:13px;padding:14px 18px;margin-bottom:16px;animation:fadeIn .3s ease;}
 
-/* ── CALCULADORA ── */
+/* CALCULADORA */
 .vf-calc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;}
 @media(max-width:500px){.vf-calc-row{grid-template-columns:1fr 1fr;}}
 .vf-calc-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:13px 15px;transition:border-color .25s;}
@@ -114,7 +130,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .vf-calc-green{color:var(--green);}
 .vf-calc-gold{color:var(--gold);}
 
-/* ── CUOTAS ── */
+/* CUOTAS */
 .vf-cuotas-section{margin-bottom:16px;}
 .vf-cuotas-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
 .vf-cuotas-grid{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;padding-right:4px;}
@@ -125,11 +141,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .vf-cuota-input{height:34px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;padding:0 10px;outline:none;width:100%;transition:border-color .2s;}
 .vf-cuota-input:focus{border-color:rgba(91,156,246,0.45);}
 
-/* ── MONTO ROW ── */
-.monto-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;}
-.monto-suffix{font-size:12px;font-weight:600;color:var(--text2);padding-bottom:14px;white-space:nowrap;}
-
-/* ── BUTTONS ── */
+/* BUTTONS */
 .vf-submit-btn{width:100%;height:52px;border-radius:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .3s;letter-spacing:.3px;}
 .vf-submit-btn-blue{background:linear-gradient(135deg,#1d4ed8,#5b9cf6);color:#fff;box-shadow:0 8px 24px rgba(59,130,246,0.3);}
 .vf-submit-btn-blue:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 36px rgba(59,130,246,0.4);}
@@ -139,57 +151,11 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 .btn-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── TOASTS ── */
+/* TOASTS */
 .vf-toast{margin-top:12px;padding:13px 16px;border-radius:12px;font-size:13px;display:none;align-items:center;gap:8px;line-height:1.4;}
 .vf-toast.show{display:flex;animation:fadeIn .3s ease;}
 .vf-toast-ok{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.28);color:var(--green);}
 .vf-toast-err{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.28);color:var(--red);}
-
-/* ── CRÉDITOS EN COBRO ── */
-.pf-cred-wrap{margin-bottom:16px;}
-.pf-cred-card{background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:14px;padding:13px 15px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
-.pf-cred-card:hover{border-color:rgba(52,211,153,0.3);}
-.pf-cred-card.sel{border-color:rgba(52,211,153,0.6);background:rgba(52,211,153,0.06);}
-.pf-cred-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-.pf-cred-id{font-size:10px;font-weight:700;color:var(--text2);letter-spacing:.06em;}
-.pf-cred-prod{font-size:13px;font-weight:600;margin-top:2px;}
-.pf-cred-saldo{font-family:'Fraunces',serif;font-weight:700;color:var(--red);white-space:nowrap;}
-.pf-cuotas{margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;}
-.pf-cuota-line{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;}
-.pf-cuota-line.pagada{text-decoration:line-through;opacity:.4;}
-.pf-cuota-line.parcial .pf-q-monto{color:var(--gold);}
-.pf-cuota-line .pf-q-tag{font-size:10px;font-weight:700;margin-left:6px;}
-
-/* ── PEDIDOS ── */
-.sel-card-wide{grid-column:1/-1;}
-.sel-card-purple::before{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
-.sel-card-purple:hover{border-color:rgba(167,139,250,0.4);box-shadow:0 16px 40px rgba(167,139,250,0.12);}
-.sel-card-purple:hover::before{opacity:1;}
-#screen-pedido{display:none;animation:fadeIn .35s ease;}
-.header-purple::before{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
-.icon-purple{background:rgba(167,139,250,0.13);border:1px solid rgba(167,139,250,0.22);}
-.vf-input-purple:focus,.vf-select-purple:focus,.vf-textarea-purple:focus{border-color:rgba(167,139,250,0.55)!important;background:rgba(167,139,250,0.05)!important;box-shadow:0 0 0 3px rgba(167,139,250,0.09)!important;}
-.vf-submit-btn-purple{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;box-shadow:0 8px 24px rgba(124,58,237,0.3);}
-.vf-submit-btn-purple:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 36px rgba(124,58,237,0.4);}
-.pd-list-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.pd-list-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;}
-.pd-mini-btn{height:30px;padding:0 12px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text2);font-size:11.5px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
-.pd-mini-btn:hover{background:rgba(255,255,255,0.08);color:var(--text);}
-.pd-mini-btn.wa{border-color:rgba(37,211,102,0.3);color:#25d366;}
-.pd-mini-btn.venta{border-color:rgba(91,156,246,0.3);color:var(--blue);}
-.pd-mini-btn.ok{border-color:rgba(52,211,153,0.3);color:var(--green);}
-.pd-mini-btn.cancel{border-color:rgba(248,113,113,0.25);color:var(--red);}
-.pd-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
-.pd-item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-.pd-item-name{font-weight:700;font-size:13.5px;}
-.pd-item-det{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.45;white-space:pre-wrap;}
-.pd-item-monto{font-family:'Fraunces',serif;font-weight:700;color:var(--gold);white-space:nowrap;}
-.pd-item-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center;}
-.pd-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:20px;background:rgba(167,139,250,0.12);color:var(--purple);}
-.pd-badge.ENCARGADO{background:rgba(91,156,246,0.12);color:var(--blue);}
-.pd-badge.LLEGO{background:rgba(245,158,11,0.12);color:var(--gold);}
-.pd-item-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
-.pd-empty{font-size:12.5px;color:var(--text2);text-align:center;padding:18px 0;}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
@@ -197,12 +163,70 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
 
-@media(max-width:600px){
-  .main{padding:20px 14px 48px;}
-  .page-title{font-size:24px;}
-  .top-bar{padding:0 16px;}
-  .ventas-form{padding:18px 16px;}
-}
+/* COMBO BUSCABLE */
+.vf-combo{position:relative;}
+.vf-combo-list{position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:230px;overflow-y:auto;background:#0d1119;border:1px solid rgba(255,255,255,0.14);border-radius:13px;box-shadow:0 16px 40px rgba(0,0,0,0.5);z-index:40;display:none;padding:6px;}
+.vf-combo-list.show{display:block;}
+.vf-combo-opt{padding:10px 12px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--text);transition:background .15s;}
+.vf-combo-opt:hover{background:rgba(91,156,246,0.12);}
+.vf-combo-opt-nuevo{color:var(--purple);font-weight:700;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px;padding-bottom:12px;}
+.vf-combo-empty{padding:10px 12px;font-size:12px;color:var(--text2);}
+
+/* DEUDAS LISTA */
+.deuda-item{border-bottom:1px solid var(--border);padding:12px 0;}
+.deuda-item-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.deuda-item-info{min-width:0;}
+.deuda-share-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;height:30px;padding:0 12px;border-radius:9px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.1);color:var(--gold2);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.deuda-share-btn:hover{background:rgba(245,158,11,0.2);transform:translateY(-1px);}
+
+/* MODAL ACCIONES POS-GENERACION PDF */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease;}
+.modal-overlay.active{display:flex;}
+.modal-card{background:#0d1119;border:1px solid rgba(91,156,246,0.3);border-radius:24px;width:100%;max-width:480px;padding:28px;box-shadow:0 24px 60px rgba(0,0,0,0.6);text-align:center;position:relative;}
+.modal-icon{width:56px;height:56px;border-radius:16px;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);color:var(--green);font-size:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.modal-title{font-family:'Fraunces',serif;font-size:22px;font-weight:900;margin-bottom:6px;}
+.modal-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5;}
+.modal-actions{display:flex;flex-direction:column;gap:10px;}
+.modal-btn{height:46px;border-radius:12px;border:none;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.modal-btn-ws{background:#25D366;color:#fff;}
+.modal-btn-ws:hover{background:#20bd5a;}
+.modal-btn-copy{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:var(--text);}
+.modal-btn-copy:hover{background:rgba(255,255,255,0.14);}
+.modal-close{margin-top:14px;background:none;border:none;color:var(--text2);font-size:12px;cursor:pointer;text-decoration:underline;}
+
+/* FLUJO CAJA TABS */
+.flujo-tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:10px;}
+.flujo-tab{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid transparent;transition:all .2s;}
+.flujo-tab.active{background:rgba(45,212,191,0.12);color:var(--teal);border-color:rgba(45,212,191,0.3);}
+
+/* MODAL: botones extra */
+.modal-btn-share{background:linear-gradient(135deg,#1d4ed8,#5b9cf6);color:#fff;height:52px;font-size:14px;}
+.modal-btn-share:hover{filter:brightness(1.08);}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* PEDIDOS (resumido) */
+.sel-card-purple::before{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+.sel-card-purple:hover{border-color:rgba(167,139,250,0.4);box-shadow:0 16px 40px rgba(167,139,250,0.12);}
+.sel-card-purple:hover::before{opacity:1;}
+.sel-card-wide{grid-column:1/-1;}
+#screen-pedidos{display:none;animation:fadeIn .35s ease;}
+.header-purple::before{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+.icon-purple{background:rgba(167,139,250,0.13);border:1px solid rgba(167,139,250,0.22);}
+.pd-form{display:grid;grid-template-columns:1.6fr 1.1fr 1fr auto;gap:8px;align-items:end;}
+@media(max-width:560px){.pd-form{grid-template-columns:1fr 1fr;}.pd-form .pd-prod{grid-column:1/-1;}.pd-form .pd-add{grid-column:1/-1;}}
+.pd-add{height:46px;padding:0 18px;border-radius:13px;border:none;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.pd-add:disabled{opacity:.5;cursor:not-allowed;}
+.pd-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 10px;}
+.pd-total{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--gold);}
+.pd-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.pd-row-info{flex:1;min-width:0;}
+.pd-row-prod{font-size:13px;font-weight:600;overflow-wrap:anywhere;}
+.pd-row-meta{font-size:11px;color:var(--text2);margin-top:2px;}
+.pd-row-monto{font-weight:700;font-size:13px;white-space:nowrap;}
+.pd-icon-btn{width:32px;height:32px;flex-shrink:0;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.pd-icon-btn.ok:hover{border-color:rgba(52,211,153,0.4);color:var(--green);}
+.pd-icon-btn.del:hover{border-color:rgba(248,113,113,0.4);color:var(--red);}
+.pd-empty{text-align:center;color:var(--text2);font-size:12px;padding:20px;}
 </style>
 </head>
 <body>
@@ -212,1088 +236,1650 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;back
 
 <!-- TOP BAR -->
 <div class="top-bar">
-  <div class="top-brand">
-    <div class="top-brand-icon">🛍️</div>
-    <div>
-      <div class="top-brand-name">ALLSHOP</div>
-      <div class="top-brand-sub">Ventas &amp; Cobros</div>
-    </div>
-  </div>
-  <a class="top-back" href="index.html">← Volver al Panel</a>
+ <div class="top-brand">
+ <div class="top-brand-icon">🛍️</div>
+ <div>
+ <div class="top-brand-name">ALLSHOP</div>
+ <div class="top-brand-sub">Ventas &amp; Cobros</div>
+ </div>
+ </div>
+ <a class="top-back" href="index.html">← Volver al Panel</a>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-  <!-- ══ PANTALLA SELECTOR ══ -->
-  <div id="screen-selector">
-    <div class="selector-hero">
-      <div class="page-badge">🛒 Operaciones</div>
-      <div class="page-title">¿Qué querés registrar?</div>
-      <div class="page-subtitle">Seleccioná una operación para continuar.</div>
-    </div>
-    <div class="selector-cards">
-      <div class="sel-card sel-card-blue" onclick="mostrarPantalla('venta')">
-        <span class="sel-card-emoji">🛒</span>
-        <div class="sel-card-title">Nueva Venta</div>
-        <div class="sel-card-desc">Registrá una venta nueva, en cuotas o contado. Se guarda en Base General y Cuotero.</div>
-      </div>
-      <div class="sel-card sel-card-green" onclick="mostrarPantalla('cobro')">
-        <span class="sel-card-emoji">💵</span>
-        <div class="sel-card-title">Registrar Cobro</div>
-        <div class="sel-card-desc">Marcá un pago recibido de un cliente existente. Descuenta del saldo en Cuotero.</div>
-      </div>
-      <div class="sel-card sel-card-purple sel-card-wide" onclick="mostrarPantalla('pedido')">
-        <span class="sel-card-emoji">📝</span>
-        <div class="sel-card-title">Pedidos</div>
-        <div class="sel-card-desc">Anotá lo que te piden por WhatsApp con su monto, y cuando se concrete pasalo a venta con un toque.</div>
-      </div>
-    </div>
-  </div>
+ <!-- ══ PANTALLA SELECTOR ══ -->
+ <div id="screen-selector">
+ <div class="selector-hero">
+ <div class="page-badge">🛒 Operaciones</div>
+ <div class="page-title">¿Qué querés registrar?</div>
+ <div class="page-subtitle">Seleccioná una operación para continuar.</div>
+ </div>
+ <div class="selector-cards">
+ <div class="sel-card sel-card-blue" onclick="mostrarPantalla('venta')">
+ <span class="sel-card-emoji">🛒</span>
+ <div class="sel-card-title">Nueva Venta</div>
+ <div class="sel-card-desc">Registrá una venta nueva, en cuotas o contado. Se guarda en Base General y Cuotero.</div>
+ </div>
+ <div class="sel-card sel-card-green" onclick="mostrarPantalla('cobro')">
+ <span class="sel-card-emoji">💵</span>
+ <div class="sel-card-title">Registrar Cobro</div>
+ <div class="sel-card-desc">Marcá un pago recibido de un cliente existente. Descuenta del saldo en Cuotero.</div>
+ </div>
+ <div class="sel-card sel-card-gold" onclick="mostrarPantalla('deudas')">
+ <span class="sel-card-emoji">💰</span>
+ <div class="sel-card-title">Ver Deudas</div>
+ <div class="sel-card-desc">Cuánto te debe cada cliente en total, sumando todos sus créditos activos.</div>
+ </div>
+ <div class="sel-card sel-card-teal" onclick="mostrarPantalla('flujo')">
+ <span class="sel-card-emoji">📊</span>
+ <div class="sel-card-title">Flujo &amp; Vencidos</div>
+ <div class="sel-card-desc">Caja por mes, cuotas a vencer y clientes morosos.</div>
+ </div>
+ <div class="sel-card sel-card-purple sel-card-wide" onclick="mostrarPantalla('pedidos')">
+ <span class="sel-card-emoji">📝</span>
+ <div class="sel-card-title">Pedidos</div>
+ <div class="sel-card-desc">Lista rápida de lo que te piden: producto, empresa y monto.</div>
+ </div>
+ </div>
+ </div>
 
-  <!-- ══ PANTALLA VENTA ══ -->
-  <div id="screen-venta">
-    <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
-    <div class="ventas-panel">
-      <div class="ventas-panel-header header-blue">
-        <div class="ventas-panel-icon icon-blue">🛒</div>
-        <div>
-          <div class="ventas-panel-title">Nueva Venta</div>
-          <div class="ventas-panel-subtitle">Registra en BASE GENERAL y CUOTERO</div>
-        </div>
-      </div>
-      <div class="ventas-form">
+ <!-- ══ PANTALLA DEUDAS ══ -->
+ <div id="screen-deudas">
+ <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+ <div class="ventas-panel">
+ <div class="ventas-panel-header header-gold">
+ <div class="ventas-panel-icon icon-gold">💰</div>
+ <div>
+ <div class="ventas-panel-title">Deudas actuales</div>
+ <div class="ventas-panel-subtitle">Saldo pendiente por cliente, sumando todos sus créditos activos</div>
+ </div>
+ </div>
+ <div class="ventas-form" style="padding:18px;">
+ <div style="text-align:center;margin-bottom:20px;">
+ <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Total por cobrar (todos los clientes)</div>
+ <div id="deudas-total-general" style="font-family:'Fraunces',serif;font-size:32px;font-weight:900;color:var(--red);">—</div>
+ </div>
+ <div class="deudas-buscador" style="margin-bottom:16px;">
+ <input class="vf-input" type="text" id="deudas-buscar" placeholder="🔍 Buscar cliente…" autocomplete="off" oninput="renderDeudas(this.value)">
+ </div>
+ <div id="deudas-lista"></div>
+ </div>
+ </div>
+ </div>
 
-        <!-- Fecha + Cliente -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Fecha</label>
-            <input class="vf-input" type="date" id="vf-fecha">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Cliente</label>
-            <select class="vf-select" id="vf-nombre-sel" onchange="vfManejarCliente(this.value)">
-              <option value="">— Seleccioná cliente —</option>
-              <option value="__nuevo__">➕ Cliente nuevo</option>
-            </select>
-          </div>
-        </div>
+ <!-- ══ PANTALLA FLUJO DE CAJA & VENCIDOS ══ -->
+ <div id="screen-flujo">
+ <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+ <div class="ventas-panel">
+ <div class="ventas-panel-header header-teal">
+ <div class="ventas-panel-icon icon-teal">📊</div>
+ <div>
+ <div class="ventas-panel-title">Flujo de Caja &amp; Vencimientos</div>
+ <div class="ventas-panel-subtitle">Cobros mensuales y estado de morosidad</div>
+ </div>
+ </div>
+ <div class="ventas-form" style="padding:18px;">
+ <div class="flujo-tabs">
+ <div class="flujo-tab active" id="tab-btn-caja" onclick="switchFlujoTab('caja')">📅 Caja por Mes</div>
+ <div class="flujo-tab" id="tab-btn-vencidos" onclick="switchFlujoTab('vencidos')">⚠️ Vencidos / Morosos</div>
+ </div>
 
-        <!-- Nuevo cliente box -->
-        <div id="vf-nuevo-cliente-box" class="nuevo-cliente-box" style="display:none;">
-          <div class="nuevo-cliente-title">✨ Nuevo Cliente</div>
-          <div class="vf-field">
-            <label class="vf-label">Nombre del cliente</label>
-            <input class="vf-input" type="text" id="vf-nombre-nuevo" placeholder="Ej: MARIA GOMEZ" oninput="this.value=this.value.toUpperCase()">
-            <span class="vf-hint">Se va a crear automáticamente en el sistema</span>
-          </div>
-        </div>
+ <!-- TAB CAJA -->
+ <div id="tab-flujo-caja">
+ <div class="vf-row vf-row-2" style="margin-bottom:18px;">
+ <div class="vf-field">
+ <label class="vf-label">Mes</label>
+ <select class="vf-select" id="flujo-mes" onchange="renderFlujoCaja()">
+ <option value="0">Enero</option>
+ <option value="1">Febrero</option>
+ <option value="2">Marzo</option>
+ <option value="3">Abril</option>
+ <option value="4">Mayo</option>
+ <option value="5">Junio</option>
+ <option value="6">Julio</option>
+ <option value="7">Agosto</option>
+ <option value="8">Septiembre</option>
+ <option value="9">Octubre</option>
+ <option value="10">Noviembre</option>
+ <option value="11">Diciembre</option>
+ </select>
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Año</label>
+ <select class="vf-select" id="flujo-anio" onchange="renderFlujoCaja()">
+ <option value="2025">2025</option>
+ <option value="2026" selected>2026</option>
+ <option value="2027">2027</option>
+ </select>
+ </div>
+ </div>
 
-        <div class="vf-divider"></div>
+ <div class="vf-calc-row">
+ <div class="vf-calc-box">
+ <div class="vf-calc-label">Cobrado en Mes</div>
+ <div class="vf-calc-value vf-calc-green" id="flujo-total-cobrado">0 Gs.</div>
+ </div>
+ <div class="vf-calc-box">
+ <div class="vf-calc-label">Pendiente Mes</div>
+ <div class="vf-calc-value vf-calc-gold" id="flujo-total-pendiente">0 Gs.</div>
+ </div>
+ <div class="vf-calc-box">
+ <div class="vf-calc-label">Total Esperado</div>
+ <div class="vf-calc-value vf-calc-blue" id="flujo-total-esperado">0 Gs.</div>
+ </div>
+ </div>
 
-        <!-- Persona / Empresa -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Persona / Tipo</label>
-            <select class="vf-select" id="vf-persona">
-              <option value="">— Seleccioná —</option>
-              <option>TRABAJO</option>
-              <option>FAMILIA</option>
-              <option>AMIGO</option>
-              <option>FACULTAD</option>
-              <option>OTRO</option>
-            </select>
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Empresa</label>
-            <input class="vf-input" type="text" id="vf-empresa" placeholder="Ej: META SPORT" oninput="this.value=this.value.toUpperCase()">
-          </div>
-        </div>
+ <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;margin:16px 0 10px;">Detalle de Cobros del Mes</div>
+ <div id="flujo-cobros-lista"></div>
+ </div>
 
-        <!-- Producto / Categoría -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Categoría</label>
-            <select class="vf-select" id="vf-producto" onchange="vfCheckOtraCategoria(this.value)">
-              <option value="">— Seleccioná —</option>
-              <option>CALZADO</option>
-              <option>ROPA</option>
-              <option>ACCESORIOS</option>
-              <option>ELECTRONICA</option>
-              <option>PERFUMERIA</option>
-              <option>OTRO</option>
-            </select>
-          </div>
-          <div class="vf-field" id="vf-producto-otro-field" style="display:none;">
-            <label class="vf-label">Especificar categoría</label>
-            <input class="vf-input" type="text" id="vf-producto-otro" placeholder="Ej: JUGUETES" oninput="this.value=this.value.toUpperCase()">
-          </div>
-        </div>
+ <!-- TAB VENCIDOS -->
+ <div id="tab-flujo-vencidos" style="display:none;">
+ <div style="font-size:12px;color:var(--text2);margin-bottom:14px;">Cuotas que ya sobrepasaron su fecha de vencimiento y continúan pendientes:</div>
+ <div id="flujo-vencidos-lista"></div>
+ </div>
 
-        <!-- Observación -->
-        <div class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">Observación</label>
-            <textarea class="vf-textarea" id="vf-obs" placeholder="Ej: NIKE AIR MAX TALLE 42, COLOR NEGRO&#10;Detalle del producto, número de pedido, etc." oninput="this.value=this.value.toUpperCase()"></textarea>
-          </div>
-        </div>
+ </div>
+ </div>
+ </div>
 
-        <div class="vf-divider"></div>
+ <!-- ══ PANTALLA VENTA ══ -->
+ <div id="screen-venta">
+ <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+ <div class="ventas-panel">
+ <div class="ventas-panel-header header-blue">
+ <div class="ventas-panel-icon icon-blue">🛒</div>
+ <div>
+ <div class="ventas-panel-title">Nueva Venta</div>
+ <div class="ventas-panel-subtitle">Registra en BASE GENERAL y CUOTERO</div>
+ </div>
+ </div>
+ <div class="ventas-form">
 
-        <!-- Precios -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Costo Real Gs.</label>
-            <input class="vf-input" type="number" id="vf-precioreal" placeholder="480000" oninput="vfRecalc()">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Precio Venta Gs.</label>
-            <input class="vf-input" type="number" id="vf-precioventa" placeholder="600000" oninput="vfRecalc()">
-          </div>
-        </div>
-        <div class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">Margen %</label>
-            <input class="vf-input" type="number" id="vf-porcentaje" placeholder="Ej: 20" step="0.1" oninput="vfRecalcFromPct()" style="max-width:200px;">
-            <span class="vf-hint">Podés ingresar el % y se calcula el precio de venta automáticamente</span>
-          </div>
-        </div>
+ <!-- Fecha + Cliente -->
+ <div class="vf-row vf-row-2">
+ <div class="vf-field">
+ <label class="vf-label">Fecha</label>
+ <input class="vf-input" type="date" id="vf-fecha">
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Cliente</label>
+ <div class="vf-combo" id="vf-combo-cliente">
+ <input class="vf-input" type="text" id="vf-nombre-buscar" placeholder="🔍 Buscar o elegir cliente…" autocomplete="off"
+ oninput="vfFiltrarClientes(this.value)" onfocus="vfMostrarListaClientes()">
+ <input type="hidden" id="vf-nombre-sel" value="">
+ <div class="vf-combo-list" id="vf-combo-lista-cliente"></div>
+ </div>
+ </div>
+ </div>
 
-        <div class="vf-calc-row">
-          <div class="vf-calc-box" id="calc-descuento">
-            <div class="vf-calc-label">Descuento Gs.</div>
-            <div class="vf-calc-value vf-calc-blue" id="vf-disp-descuento">—</div>
-          </div>
-          <div class="vf-calc-box" id="calc-ganancia">
-            <div class="vf-calc-label">Ganancia Gs.</div>
-            <div class="vf-calc-value vf-calc-green" id="vf-disp-ganancias">—</div>
-          </div>
-          <div class="vf-calc-box" id="calc-movimiento">
-            <div class="vf-calc-label">Movimiento Gs.</div>
-            <div class="vf-calc-value vf-calc-gold" id="vf-disp-movimiento">—</div>
-          </div>
-        </div>
+ <!-- Nuevo cliente box -->
+ <div id="vf-nuevo-cliente-box" class="nuevo-cliente-box" style="display:none;">
+ <div class="nuevo-cliente-title">✨ Nuevo Cliente</div>
+ <div class="vf-field">
+ <label class="vf-label">Nombre del cliente</label>
+ <input class="vf-input" type="text" id="vf-nombre-nuevo" placeholder="Ej: MARIA GOMEZ" oninput="this.value=this.value.toUpperCase()">
+ <span class="vf-hint">Se va a crear automáticamente en el sistema</span>
+ </div>
+ </div>
 
-        <div class="vf-divider"></div>
+ <div class="vf-divider"></div>
 
-        <!-- Anticipo + Cuotas -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Anticipo Gs.</label>
-            <input class="vf-input" type="number" id="vf-anticipo" placeholder="0" value="0">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">N° de Cuotas</label>
-            <select class="vf-select" id="vf-ncuotas" onchange="vfGenerarCuotas()">
-              <option value="0">Contado (sin cuotas)</option>
-              <option value="1">1 cuota</option>
-              <option value="2">2 cuotas</option>
-              <option value="3">3 cuotas</option>
-              <option value="4">4 cuotas</option>
-              <option value="5">5 cuotas</option>
-              <option value="6">6 cuotas</option>
-              <option value="9">9 cuotas</option>
-              <option value="12">12 cuotas</option>
-              <option value="18">18 cuotas</option>
-              <option value="24">24 cuotas</option>
-            </select>
-          </div>
-        </div>
+ <!-- Persona / Empresa -->
+ <div class="vf-row vf-row-2">
+ <div class="vf-field">
+ <label class="vf-label">Persona / Tipo</label>
+ <select class="vf-select" id="vf-persona">
+ <option value="">— Seleccioná —</option>
+ <option>TRABAJO</option>
+ <option>FAMILIA</option>
+ <option>AMIGO</option>
+ <option>FACULTAD</option>
+ <option>OTRO</option>
+ </select>
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Empresa</label>
+ <input class="vf-input" type="text" id="vf-empresa" placeholder="Ej: META SPORT" oninput="this.value=this.value.toUpperCase()">
+ </div>
+ </div>
 
-        <div id="vf-montocuota-row" style="display:none;" class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">Monto por Cuota Gs.</label>
-            <input class="vf-input" type="number" id="vf-montocuota" placeholder="Auto" oninput="vfSyncCuotaManual()">
-            <span class="vf-hint">Se calcula automáticamente según precio y anticipo</span>
-          </div>
-        </div>
+ <!-- Producto / Categoría -->
+ <div class="vf-row vf-row-2">
+ <div class="vf-field">
+ <label class="vf-label">Categoría</label>
+ <select class="vf-select" id="vf-producto" onchange="vfCheckOtraCategoria(this.value)">
+ <option value="">— Seleccioná —</option>
+ <option>CALZADO</option>
+ <option>ROPA</option>
+ <option>ACCESORIOS</option>
+ <option>ELECTRONICA</option>
+ <option>PERFUMERIA</option>
+ <option>OTRO</option>
+ </select>
+ </div>
+ <div class="vf-field" id="vf-producto-otro-field" style="display:none;">
+ <label class="vf-label">Especificar categoría</label>
+ <input class="vf-input" type="text" id="vf-producto-otro" placeholder="Ej: JUGUETES" oninput="this.value=this.value.toUpperCase()">
+ </div>
+ </div>
 
-        <!-- Cuotas dinámicas -->
-        <div id="vf-cuotas-section" style="display:none;" class="vf-cuotas-section">
-          <div class="vf-cuotas-label">Fechas &amp; Montos de Cuotas</div>
-          <div class="vf-cuotas-grid" id="vf-cuotas-grid"></div>
-        </div>
+ <!-- Observación -->
+ <div class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Observación</label>
+ <textarea class="vf-textarea" id="vf-obs" placeholder="Ej: NIKE AIR MAX TALLE 42, COLOR NEGRO&#10;Detalle del producto, número de pedido, etc." oninput="this.value=this.value.toUpperCase()"></textarea>
+ </div>
+ </div>
 
-        <button class="vf-submit-btn vf-submit-btn-blue" id="vf-btn-venta" onclick="vfEnviarVenta()">
-          <span>🛒</span>
-          <span id="vf-btn-venta-label">Registrar Venta</span>
-          <div class="btn-spinner" id="vf-spinner-venta" style="display:none;"></div>
-        </button>
-        <div class="vf-toast" id="vf-toast-venta"></div>
+ <!-- Teléfono WhatsApp -->
+ <div class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Teléfono (WhatsApp)</label>
+ <input type="tel" id="vf-telefono" class="vf-input" placeholder="+595 971 123456">
+ <div class="vf-hint">Opcional: para compartir recibo por WhatsApp</div>
+ </div>
+ </div>
 
-      </div>
-    </div>
-  </div><!-- end screen-venta -->
+ <div class="vf-divider"></div>
 
-  <!-- ══ PANTALLA COBRO ══ -->
-  <div id="screen-cobro">
-    <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
-    <div class="ventas-panel">
-      <div class="ventas-panel-header header-green">
-        <div class="ventas-panel-icon icon-green">💵</div>
-        <div>
-          <div class="ventas-panel-title">Registrar Cobro</div>
-          <div class="ventas-panel-subtitle">Descuenta cuota o pago parcial en CUOTERO</div>
-        </div>
-      </div>
-      <div class="ventas-form">
+ <!-- Precios -->
+ <div class="vf-row vf-row-2">
+ <div class="vf-field">
+ <label class="vf-label">Costo Real Gs.</label>
+ <input class="vf-input" type="number" id="vf-precioreal" placeholder="480000" oninput="vfRecalc()">
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Precio Venta Gs.</label>
+ <input class="vf-input" type="number" id="vf-precioventa" placeholder="600000" oninput="vfRecalc()">
+ </div>
+ </div>
+ <div class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Margen %</label>
+ <input class="vf-input" type="number" id="vf-porcentaje" placeholder="Ej: 20" step="0.1" oninput="vfRecalcFromPct()" style="max-width:200px;">
+ <span class="vf-hint">Podés ingresar el % y se calcula el precio de venta automáticamente</span>
+ </div>
+ </div>
 
-        <!-- Cliente -->
-        <div class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">Cliente</label>
-            <select class="vf-select vf-select-green" id="pf-nombre-sel" onchange="pfSeleccionarCliente(this.value)">
-              <option value="">— Seleccioná cliente —</option>
-            </select>
-          </div>
-        </div>
+ <div class="vf-calc-row">
+ <div class="vf-calc-box" id="calc-descuento">
+ <div class="vf-calc-label">Descuento Gs.</div>
+ <div class="vf-calc-value vf-calc-blue" id="vf-disp-descuento">—</div>
+ </div>
+ <div class="vf-calc-box" id="calc-ganancia">
+ <div class="vf-calc-label">Ganancia Gs.</div>
+ <div class="vf-calc-value vf-calc-green" id="vf-disp-ganancias">—</div>
+ </div>
+ <div class="vf-calc-box" id="calc-movimiento">
+ <div class="vf-calc-label">Movimiento Gs.</div>
+ <div class="vf-calc-value vf-calc-gold" id="vf-disp-movimiento">—</div>
+ </div>
+ </div>
 
-        <!-- Saldo -->
-        <div id="pf-saldo-box" class="vf-saldo-box" style="display:none;">
-          <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Deuda actual del cliente</div>
-          <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--red);" id="pf-saldo-valor">—</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:3px;" id="pf-cuotas-pendientes">—</div>
-        </div>
+ <div class="vf-divider"></div>
 
-        <!-- Créditos del cliente -->
-        <div id="pf-creditos" class="pf-cred-wrap" style="display:none;"></div>
+ <!-- Anticipo + Cuotas -->
+ <div class="vf-row vf-row-2">
+ <div class="vf-field">
+ <label class="vf-label">Anticipo Gs.</label>
+ <input class="vf-input" type="number" id="vf-anticipo" placeholder="0" value="0" oninput="vfRecalc()">
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">N° de Cuotas</label>
+ <select class="vf-select" id="vf-ncuotas" onchange="vfGenerarCuotas()">
+ <option value="0">Contado (sin cuotas)</option>
+ <option value="1">1 cuota</option>
+ <option value="2">2 cuotas</option>
+ <option value="3">3 cuotas</option>
+ <option value="4">4 cuotas</option>
+ <option value="5">5 cuotas</option>
+ <option value="6">6 cuotas</option>
+ <option value="9">9 cuotas</option>
+ <option value="12">12 cuotas</option>
+ <option value="18">18 cuotas</option>
+ <option value="24">24 cuotas</option>
+ </select>
+ </div>
+ </div>
 
-        <!-- Fecha + Monto -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Fecha del Cobro</label>
-            <input class="vf-input vf-input-green" type="date" id="pf-fecha">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Monto Cobrado Gs.</label>
-            <input class="vf-input vf-input-green" type="number" id="pf-monto" placeholder="250000">
-          </div>
-        </div>
+ <div id="vf-montocuota-row" style="display:none;" class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Monto por Cuota Gs.</label>
+ <input class="vf-input" type="number" id="vf-montocuota" placeholder="Auto" oninput="vfSyncCuotaManual()">
+ <span class="vf-hint">Se calcula automáticamente según precio y anticipo</span>
+ </div>
+ </div>
 
-        <!-- Producto + Persona -->
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Categoría</label>
-            <select class="vf-select vf-select-green" id="pf-producto">
-              <option value="">— Seleccioná —</option>
-              <option>CALZADO</option>
-              <option>ROPA</option>
-              <option>ACCESORIOS</option>
-              <option>ELECTRONICA</option>
-              <option>PERFUMERIA</option>
-              <option>OTRO</option>
-            </select>
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Persona / Tipo</label>
-            <select class="vf-select vf-select-green" id="pf-persona">
-              <option value="">— Seleccioná —</option>
-              <option>TRABAJO</option>
-              <option>FAMILIA</option>
-              <option>AMIGO</option>
-              <option>FACULTAD</option>
-              <option>OTRO</option>
-            </select>
-          </div>
-        </div>
+ <!-- Cuotas dinámicas (Proforma) -->
+ <div id="vf-cuotas-section" style="display:none;" class="vf-cuotas-section">
+ <div class="vf-cuotas-label">📋 Proforma / Fechas &amp; Montos de Cuotas</div>
+ <div class="vf-cuotas-grid" id="vf-cuotas-grid"></div>
+ </div>
 
-        <!-- Empresa -->
-        <div class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">Empresa</label>
-            <input class="vf-input vf-input-green" type="text" id="pf-empresa" placeholder="Ej: META SPORT" oninput="this.value=this.value.toUpperCase()">
-          </div>
-        </div>
+ <button class="vf-submit-btn vf-submit-btn-blue" id="vf-btn-venta" onclick="vfEnviarVenta()">
+ <span>🛒</span>
+ <span id="vf-btn-venta-label">Registrar Venta</span>
+ <div class="btn-spinner" id="vf-spinner-venta" style="display:none;"></div>
+ </button>
+ <div class="vf-toast" id="vf-toast-venta"></div>
 
-        <!-- Observación -->
-        <div class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">Observación</label>
-            <textarea class="vf-textarea vf-textarea-green" id="pf-obs" placeholder="Ej: CUOTA 1/3 NIKE AIR MAX&#10;Podés aclarar qué cuota es, o cualquier detalle del cobro." oninput="this.value=this.value.toUpperCase()"></textarea>
-          </div>
-        </div>
+ </div>
+ </div>
+ </div><!-- end screen-venta -->
 
-        <button class="vf-submit-btn vf-submit-btn-green" id="vf-btn-pago" onclick="vfEnviarPago()">
-          <span>💵</span>
-          <span id="vf-btn-pago-label">Registrar Cobro</span>
-          <div class="btn-spinner" id="vf-spinner-pago" style="display:none;"></div>
-        </button>
-        <div class="vf-toast" id="vf-toast-pago"></div>
+ <!-- ══ PANTALLA COBRO ══ -->
+ <div id="screen-cobro">
+ <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+ <div class="ventas-panel">
+ <div class="ventas-panel-header header-green">
+ <div class="ventas-panel-icon icon-green">💵</div>
+ <div>
+ <div class="ventas-panel-title">Registrar Cobro</div>
+ <div class="ventas-panel-subtitle">Descuenta cuota o pago parcial en CUOTERO</div>
+ </div>
+ </div>
+ <div class="ventas-form">
 
-      </div>
-    </div>
-  </div><!-- end screen-cobro -->
+ <!-- Cliente -->
+ <div class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Cliente / Crédito</label>
+ <div class="vf-combo" id="pf-combo-cliente">
+ <input class="vf-input vf-input-green" type="text" id="pf-nombre-buscar" placeholder="🔍 Buscar cliente o crédito…" autocomplete="off"
+ oninput="pfFiltrarClientes(this.value)" onfocus="pfMostrarListaClientes()">
+ <input type="hidden" id="pf-nombre-sel" value="">
+ <div class="vf-combo-list" id="pf-combo-lista-cliente"></div>
+ </div>
+ </div>
+ </div>
 
-  <!-- ══ PANTALLA PEDIDO ══ -->
-  <div id="screen-pedido">
-    <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
-    <div class="ventas-panel">
-      <div class="ventas-panel-header header-purple">
-        <div class="ventas-panel-icon icon-purple">📝</div>
-        <div>
-          <div class="ventas-panel-title">Nuevo Pedido</div>
-          <div class="ventas-panel-subtitle">Se guarda en la hoja PEDIDOS (no afecta Cuotero hasta pasarlo a venta)</div>
-        </div>
-      </div>
-      <div class="ventas-form">
+ <!-- Saldo -->
+ <div id="pf-saldo-box" class="vf-saldo-box" style="display:none;"></div>
 
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Fecha</label>
-            <input class="vf-input vf-input-purple" type="date" id="pd-fecha">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Cliente</label>
-            <select class="vf-select vf-select-purple" id="pd-nombre-sel" onchange="pdManejarCliente(this.value)">
-              <option value="">— Seleccioná cliente —</option>
-              <option value="__nuevo__">➕ Cliente nuevo</option>
-            </select>
-          </div>
-        </div>
+ <!-- Fecha + Monto -->
+ <div class="vf-row vf-row-2">
+ <div class="vf-field">
+ <label class="vf-label">Fecha del Cobro</label>
+ <input class="vf-input vf-input-green" type="date" id="pf-fecha">
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Monto Cobrado Gs.</label>
+ <input class="vf-input vf-input-green" type="number" id="pf-monto" placeholder="250000">
+ </div>
+ </div>
 
-        <div id="pd-nuevo-cliente-box" class="nuevo-cliente-box" style="display:none;">
-          <div class="nuevo-cliente-title">✨ Nuevo Cliente</div>
-          <div class="vf-field">
-            <label class="vf-label">Nombre del cliente</label>
-            <input class="vf-input vf-input-purple" type="text" id="pd-nombre-nuevo" placeholder="Ej: MARIA GOMEZ" oninput="this.value=this.value.toUpperCase()">
-          </div>
-        </div>
+ <!-- Teléfono Opcional -->
+ <div class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Teléfono WhatsApp (Opcional)</label>
+ <input type="tel" id="pf-telefono" class="vf-input vf-input-green" placeholder="+595 971 123456">
+ </div>
+ </div>
 
-        <div class="vf-row vf-row-2" style="margin-top:16px;">
-          <div class="vf-field">
-            <label class="vf-label">WhatsApp (opcional)</label>
-            <input class="vf-input vf-input-purple" type="tel" id="pd-telefono" placeholder="0981 123 456">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Categoría</label>
-            <select class="vf-select vf-select-purple" id="pd-categoria">
-              <option value="">— Seleccioná —</option>
-              <option>CALZADO</option>
-              <option>ROPA</option>
-              <option>ACCESORIOS</option>
-              <option>ELECTRONICA</option>
-              <option>PERFUMERIA</option>
-              <option>OTRO</option>
-            </select>
-          </div>
-        </div>
+ <!-- Observación -->
+ <div class="vf-row">
+ <div class="vf-field">
+ <label class="vf-label">Observación</label>
+ <textarea class="vf-textarea vf-textarea-green" id="pf-obs" placeholder="Ej: CUOTA 1/3 NIKE AIR MAX&#10;Podés aclarar qué cuota es, o cualquier detalle del cobro." oninput="this.value=this.value.toUpperCase()"></textarea>
+ </div>
+ </div>
 
-        <div class="vf-row">
-          <div class="vf-field">
-            <label class="vf-label">¿Qué pidió?</label>
-            <textarea class="vf-textarea vf-textarea-purple" id="pd-detalle" placeholder="Ej: NIKE AIR MAX TALLE 42, NEGRO&#10;Link, color, talle, cantidad…" oninput="this.value=this.value.toUpperCase()"></textarea>
-          </div>
-        </div>
+ <button class="vf-submit-btn vf-submit-btn-green" id="vf-btn-pago" onclick="vfEnviarPago()">
+ <span>💵</span>
+ <span id="vf-btn-pago-label">Registrar Cobro</span>
+ <div class="btn-spinner" id="vf-spinner-pago" style="display:none;"></div>
+ </button>
+ <div class="vf-toast" id="vf-toast-pago"></div>
 
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Monto Gs.</label>
-            <input class="vf-input vf-input-purple" type="number" id="pd-monto" placeholder="600000">
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Seña recibida Gs.</label>
-            <input class="vf-input vf-input-purple" type="number" id="pd-sena" placeholder="0" value="0">
-          </div>
-        </div>
+ </div>
+ </div>
+ </div><!-- end screen-cobro -->
 
-        <div class="vf-row vf-row-2">
-          <div class="vf-field">
-            <label class="vf-label">Estado</label>
-            <select class="vf-select vf-select-purple" id="pd-estado">
-              <option value="PENDIENTE">PENDIENTE</option>
-              <option value="ENCARGADO">ENCARGADO</option>
-              <option value="LLEGO">LLEGÓ</option>
-            </select>
-          </div>
-          <div class="vf-field">
-            <label class="vf-label">Entrega estimada</label>
-            <input class="vf-input vf-input-purple" type="date" id="pd-entrega">
-          </div>
-        </div>
+ <!-- ══ PANTALLA PEDIDOS ══ -->
+ <div id="screen-pedidos">
+ <div class="form-back" onclick="mostrarPantalla('selector')">← Volver</div>
+ <div class="ventas-panel">
+ <div class="ventas-panel-header header-purple">
+ <div class="ventas-panel-icon icon-purple">📝</div>
+ <div>
+ <div class="ventas-panel-title">Pedidos</div>
+ <div class="ventas-panel-subtitle">Anotá rápido lo que te piden. Tocá ✓ cuando ya esté resuelto.</div>
+ </div>
+ </div>
+ <div class="ventas-form" style="padding:18px;">
+ <div class="pd-form">
+ <div class="vf-field pd-prod">
+ <label class="vf-label">Producto</label>
+ <input class="vf-input" type="text" id="pd-producto" placeholder="Ej: NIKE AIR MAX 42" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')pdAgregar()">
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Empresa</label>
+ <input class="vf-input" type="text" id="pd-empresa" placeholder="Ej: META SPORT" list="pd-empresas" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')pdAgregar()">
+ <datalist id="pd-empresas"></datalist>
+ </div>
+ <div class="vf-field">
+ <label class="vf-label">Monto Gs.</label>
+ <input class="vf-input" type="number" id="pd-monto" placeholder="600000" onkeydown="if(event.key==='Enter')pdAgregar()">
+ </div>
+ <button class="pd-add" id="pd-btn" onclick="pdAgregar()">＋ Agregar</button>
+ </div>
+ <div class="vf-toast" id="pd-toast"></div>
 
-        <button class="vf-submit-btn vf-submit-btn-purple" id="pd-btn" onclick="pdEnviarPedido()">
-          <span>📝</span>
-          <span id="pd-btn-label">Guardar Pedido</span>
-          <div class="btn-spinner" id="pd-spinner" style="display:none;"></div>
-        </button>
-        <div class="vf-toast" id="pd-toast"></div>
-
-        <div class="vf-divider"></div>
-
-        <div class="pd-list-head">
-          <div class="pd-list-title">Pedidos abiertos</div>
-          <button class="pd-mini-btn" onclick="pdCargarPedidos()">↻ Actualizar</button>
-        </div>
-        <div id="pd-lista"><div class="pd-empty">Cargando…</div></div>
-
-      </div>
-    </div>
-  </div><!-- end screen-pedido -->
+ <div class="pd-summary">
+ <input class="vf-input" type="text" id="pd-buscar" placeholder="🔍 Buscar producto o empresa…" oninput="pdRender()" style="max-width:260px;height:38px;font-size:12.5px;">
+ <div style="text-align:right;">
+ <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;" id="pd-count">—</div>
+ <div class="pd-total" id="pd-total">—</div>
+ </div>
+ </div>
+ <div id="pd-lista"><div class="pd-empty">Cargando…</div></div>
+ </div>
+ </div>
+ </div><!-- end screen-pedidos -->
 
 </div><!-- end main -->
 
+<!-- MODAL COMPARTIR / ACCIONES POS PDF -->
+<div class="modal-overlay" id="modal-post-pdf">
+ <div class="modal-card">
+ <div class="modal-icon">📄</div>
+ <div class="modal-title" id="modal-pdf-title">¡Recibo listo!</div>
+ <div class="modal-desc" id="modal-pdf-desc">Compartí el PDF por WhatsApp, correo o la app que quieras.</div>
+ <div class="modal-actions">
+ <button class="modal-btn modal-btn-share" onclick="compartirPDF()">
+ <span>📤 Compartir PDF</span>
+ </button>
+ <button class="modal-btn modal-btn-ws" onclick="modalShareWhatsApp()">
+ <span>💬 Enviar resumen en texto por WhatsApp</span>
+ </button>
+ <div class="modal-row">
+ <button class="modal-btn modal-btn-copy" onclick="verPDF()"><span>👁 Ver PDF</span></button>
+ <button class="modal-btn modal-btn-copy" onclick="descargarPDF()"><span>⬇️ Descargar</span></button>
+ </div>
+ <button class="modal-btn modal-btn-copy" onclick="modalCopyText()">
+ <span>📋 Copiar resumen en texto</span>
+ </button>
+ </div>
+ <button class="modal-close" onclick="cerrarModalPdf()">Cerrar ventana</button>
+ </div>
+</div>
+
 <script>
-// ══════════════════════════════════════════════════════════════════
 // CONFIG
-// ══════════════════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvGh69zMLmcxHCnmwEx_1SpeP1qOoBTLIKRZ_qnIo5Zq33gf0TOeeZDeDQex2zF4CS/exec';
-const SHEET_CUOTERO_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv4sJRpZ7wf2dHKkkGpYkhAt1F0ysyRzvHwkNdw05r1APa7nO8ZFDSRmJ7SoQ64wSk8idaVYt0iu5-/pub?gid=900301684&single=true&output=csv';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrIyp9olHDHoG5_tmgsJ71VrbbOgSaimI506pzy3q8tD-mqBq41JRX2OBTwCC-otUGnQ/exec';
+const SHEET_CREDITOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaI0tkwTjzrV8nGKt48LESBQ5WmmP1sobd3YtdCV8uQ9Wu_49EjSAX6AojnIJ2E904fVgxmSEeBD_e/pub?gid=907904341&single=true&output=csv';
+const SHEET_CUOTAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaI0tkwTjzrV8nGKt48LESBQ5WmmP1sobd3YtdCV8uQ9Wu_49EjSAX6AojnIJ2E904fVgxmSEeBD_e/pub?gid=1298959569&single=true&output=csv';
 
-let cuoteroRows = [];
+let creditosRows = [];
+let cuotasRows = [];
+let pendingModalData = null;
 
-// ── Fecha default hoy ──
+// Fecha default hoy
 (function setDates() {
-  const hoy = new Date().toISOString().split('T')[0];
-  document.getElementById('vf-fecha').value = hoy;
-  document.getElementById('pf-fecha').value = hoy;
-  document.getElementById('pd-fecha').value = hoy;
+ const hoy = new Date().toISOString().split('T')[0];
+ document.getElementById('vf-fecha').value = hoy;
+ document.getElementById('pf-fecha').value = hoy;
+ const hoyD = new Date();
+ document.getElementById('flujo-mes').value = hoyD.getMonth();
+ document.getElementById('flujo-anio').value = hoyD.getFullYear();
 })();
 
-// ── Cargar CUOTERO ──
-async function cargarCuotero() {
-  try {
-    const res  = await fetch(SHEET_CUOTERO_URL);
-    const text = await res.text();
-    cuoteroRows = parseCSV(text);
-    poblarSelectoresClientes();
-  } catch(e) {
-    console.warn('No se pudo cargar el CUOTERO:', e.message);
-  }
+async function cargarDatos() {
+ try {
+ const [resC, resQ] = await Promise.all([
+ fetch(SHEET_CREDITOS_URL),
+ fetch(SHEET_CUOTAS_URL)
+ ]);
+ creditosRows = parseCSV(await resC.text());
+ cuotasRows = parseCSV(await resQ.text());
+ poblarSelectoresClientes();
+ } catch(e) {
+ console.warn('No se pudo cargar CREDITOS/CUOTAS:', e.message);
+ }
 }
-cargarCuotero();
+cargarDatos();
+
+function saldoPendienteCredito(idCredito) {
+ return cuotasRows.slice(1)
+ .filter(r => r[1] === idCredito && r[7] !== 'PAGADA')
+ .reduce((acc, r) => acc + parseMontoPY(r[6]), 0); // Corregido: r[6] es SALDO_PENDIENTE
+}
+
+function historialPagosCredito(idCredito) {
+ return cuotasRows.slice(1)
+ .filter(r => r[1] === idCredito && (r[7] === 'PAGADA' || parseMontoPY(r[6]) < parseMontoPY(r[5])))
+ .map(r => ({
+ cuota: r[3],
+ fecha: r[4],
+ pagado: parseMontoPY(r[5]) - parseMontoPY(r[6])
+ }));
+}
+
+let clientesVentaAll = [];
+let creditosCobroAll = [];
 
 function poblarSelectoresClientes() {
-  const clientes = cuoteroRows.slice(1)
-    .map(r => r[0]?.toString().trim().toUpperCase())
-    .filter(Boolean)
-    .sort();
+ const filas = creditosRows.slice(1).filter(r => r[3]);
 
-  // selector venta
-  const selVenta = document.getElementById('vf-nombre-sel');
-  // mantener primeras 2 opciones (placeholder + nuevo)
-  while(selVenta.options.length > 2) selVenta.remove(2);
-  clientes.forEach(c => {
-    const o = new Option(c, c);
-    selVenta.add(o);
-  });
+ const clientes = [...new Set(filas.map(r => r[3].toString().trim().toUpperCase()))].sort();
+ clientesVentaAll = clientes.map(c => ({ value: c, label: c }));
 
-  // selector cobro
-  const selCobro = document.getElementById('pf-nombre-sel');
-  while(selCobro.options.length > 1) selCobro.remove(1);
-  clientes.forEach(c => {
-    const o = new Option(c, c);
-    selCobro.add(o);
-  });
-
-  // selector pedido
-  const selPed = document.getElementById('pd-nombre-sel');
-  const prevPed = selPed.value;
-  while(selPed.options.length > 2) selPed.remove(2);
-  clientes.forEach(c => selPed.add(new Option(c, c)));
-  if(prevPed) selPed.value = prevPed;
+ creditosCobroAll = filas
+ .filter(r => r[15] === 'FINANCIADO')
+ .map(r => {
+ const idCredito = r[0];
+ const saldo = saldoPendienteCredito(idCredito);
+ if (saldo <= 0) return null;
+ const label = `${r[3]} — ${r[5]} (${idCredito}) — ${saldo.toLocaleString('es-PY')} Gs.`;
+ return { value: idCredito, label };
+ })
+ .filter(Boolean);
 }
+
+// COMBOS
+function vfMostrarListaClientes() { vfRenderListaClientes(document.getElementById('vf-nombre-buscar').value); }
+function vfFiltrarClientes(txt) { vfRenderListaClientes(txt); }
+function vfRenderListaClientes(txt) {
+ const lista = document.getElementById('vf-combo-lista-cliente');
+ const filtro = (txt || '').trim().toUpperCase();
+ const opciones = filtro ? clientesVentaAll.filter(c => c.label.toUpperCase().includes(filtro)) : clientesVentaAll;
+
+ let html = `<div class="vf-combo-opt vf-combo-opt-nuevo" onclick="vfSeleccionarClienteVenta('__nuevo__','➕ Cliente nuevo')">➕ Cliente nuevo</div>`;
+ if (opciones.length) {
+ html += opciones.map(c => `<div class="vf-combo-opt" onclick="vfSeleccionarClienteVenta('${c.value.replace(/'/g,"\\'")}','${c.label.replace(/'/g,"\\'")}')">${c.label}</div>`).join('');
+ } else if (filtro) {
+ html += `<div class="vf-combo-empty">Sin coincidencias. Podés cargarlo como cliente nuevo.</div>`;
+ }
+ lista.innerHTML = html;
+ lista.classList.add('show');
+}
+function vfSeleccionarClienteVenta(value, label) {
+ document.getElementById('vf-nombre-sel').value = value;
+ document.getElementById('vf-nombre-buscar').value = value === '__nuevo__' ? '' : label;
+ document.getElementById('vf-combo-lista-cliente').classList.remove('show');
+ vfManejarCliente(value);
+}
+
+function pfMostrarListaClientes() { pfRenderListaClientes(document.getElementById('pf-nombre-buscar').value); }
+function pfFiltrarClientes(txt) { pfRenderListaClientes(txt); }
+function pfRenderListaClientes(txt) {
+ const lista = document.getElementById('pf-combo-lista-cliente');
+ const filtro = (txt || '').trim().toUpperCase();
+ const opciones = filtro ? creditosCobroAll.filter(c => c.label.toUpperCase().includes(filtro)) : creditosCobroAll;
+
+ lista.innerHTML = opciones.length
+ ? opciones.map(c => `<div class="vf-combo-opt" onclick="pfSeleccionarClienteCombo('${c.value.replace(/'/g,"\\'")}','${c.label.replace(/'/g,"\\'")}')">${c.label}</div>`).join('')
+ : `<div class="vf-combo-empty">Sin coincidencias.</div>`;
+ lista.classList.add('show');
+}
+function pfSeleccionarClienteCombo(value, label) {
+ document.getElementById('pf-nombre-sel').value = value;
+ document.getElementById('pf-nombre-buscar').value = label;
+ document.getElementById('pf-combo-lista-cliente').classList.remove('show');
+ pfSeleccionarCliente(value);
+}
+
+document.addEventListener('click', (e) => {
+ const comboVenta = document.getElementById('vf-combo-cliente');
+ const comboCobro = document.getElementById('pf-combo-cliente');
+ if (comboVenta && !comboVenta.contains(e.target)) {
+ document.getElementById('vf-combo-lista-cliente').classList.remove('show');
+ }
+ if (comboCobro && !comboCobro.contains(e.target)) {
+ document.getElementById('pf-combo-lista-cliente').classList.remove('show');
+ }
+});
 
 function parseCSV(text) {
-  const rows=[];
-  for(const line of text.split(/\r?\n/)){
-    if(!line.trim()) continue;
-    const cells=[]; let cur='', inQ=false;
-    for(let i=0;i<line.length;i++){
-      const ch=line[i];
-      if(ch==='"'){inQ=!inQ;}
-      else if(ch===','&&!inQ){cells.push(cur.trim());cur='';}
-      else{cur+=ch;}
-    }
-    cells.push(cur.trim());
-    rows.push(cells);
-  }
-  return rows;
+ const rows=[];
+ for(const line of text.split(/\r?\n/)){
+ if(!line.trim()) continue;
+ const cells=[]; let cur='', inQ=false;
+ for(let i=0;i<line.length;i++){
+ const ch=line[i];
+ if(ch==='"'){inQ=!inQ;}
+ else if(ch===','&&!inQ){cells.push(cur.trim());cur='';}
+ else{cur+=ch;}
+ }
+ cells.push(cur.trim());
+ rows.push(cells);
+ }
+ return rows;
 }
+
 function parseMontoPY(str) {
-  if(!str) return 0;
-  let s = str.toString().trim();
-  if(!s || s==='-' || s==='0') return 0;
-  const isNeg = s.startsWith('-');
-  s = s.replace(/^-/,'');
-  // Formato PY: puntos como miles, coma como decimal (ej: 3.286.400 o 410.800 o 403,750)
-  // Primero eliminar puntos de miles, luego coma decimal
-  s = s.replace(/\./g, '').replace(',', '.');
-  const num = parseFloat(s) || 0;
-  return isNeg ? -num : num;
+ if(!str) return 0;
+ let s = str.toString().trim();
+ if(!s || s==='-' || s==='0') return 0;
+ const isNeg = s.startsWith('-');
+ s = s.replace(/^-/,'').replace(/\./g, '').replace(',', '.');
+ const num = parseFloat(s) || 0;
+ return isNeg ? -num : num;
 }
 
-// ══════════════════════════════════════════════════════════════════
-// NAVEGACIÓN ENTRE PANTALLAS
-// ══════════════════════════════════════════════════════════════════
+// NAVEGACION
 function mostrarPantalla(pantalla) {
-  document.getElementById('screen-selector').style.display = 'none';
-  document.getElementById('screen-venta').style.display    = 'none';
-  document.getElementById('screen-cobro').style.display    = 'none';
-  document.getElementById('screen-pedido').style.display   = 'none';
-  if(pantalla !== 'venta') pedidoEnConversion = null;
-  if(pantalla === 'pedido') {
-    document.getElementById('screen-pedido').style.display = 'block';
-    pdCargarPedidos();
-  } else if(pantalla === 'selector') {
-    document.getElementById('screen-selector').style.display = 'block';
-  } else if(pantalla === 'venta') {
-    document.getElementById('screen-venta').style.display = 'block';
-    document.getElementById('screen-venta').classList.add('active');
-  } else if(pantalla === 'cobro') {
-    document.getElementById('screen-cobro').style.display = 'block';
-    document.getElementById('screen-cobro').classList.add('active');
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
+ document.getElementById('screen-selector').style.display = 'none';
+ document.getElementById('screen-venta').style.display = 'none';
+ document.getElementById('screen-cobro').style.display = 'none';
+ document.getElementById('screen-deudas').style.display = 'none';
+ document.getElementById('screen-flujo').style.display = 'none';
+ document.getElementById('screen-pedidos').style.display = 'none';
+
+ document.getElementById('screen-' + pantalla).style.display = 'block';
+ document.getElementById('screen-' + pantalla).classList.add('active');
+
+ if(pantalla === 'deudas') renderDeudas();
+ if(pantalla === 'flujo') { renderFlujoCaja(); renderFlujoVencidos(); }
+ if(pantalla === 'pedidos') pdCargar();
+ window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ══════════════════════════════════════════════════════════════════
-// VENTA — manejo de cliente nuevo
-// ══════════════════════════════════════════════════════════════════
+// DEUDAS
+let deudasCache = [];
+function renderDeudas(filtroTexto) {
+ const totalEl = document.getElementById('deudas-total-general');
+ const listaEl = document.getElementById('deudas-lista');
+
+ const porCliente = {};
+ creditosRows.slice(1).filter(r => r[3] && r[15] === 'FINANCIADO').forEach(r => {
+ const idCredito = r[0], nombre = r[3], producto = r[5];
+ const saldo = saldoPendienteCredito(idCredito);
+ if (saldo <= 0) return;
+ if (!porCliente[nombre]) porCliente[nombre] = { total: 0, creditos: [] };
+ porCliente[nombre].total += saldo;
+ porCliente[nombre].creditos.push({ idCredito, producto, saldo });
+ });
+
+ let nombres = Object.keys(porCliente).sort((a,b) => porCliente[b].total - porCliente[a].total);
+ const totalGeneral = nombres.reduce((acc,n) => acc + porCliente[n].total, 0);
+ totalEl.textContent = totalGeneral.toLocaleString('es-PY') + ' Gs.';
+
+ const filtro = (filtroTexto || '').trim().toUpperCase();
+ if (filtro) nombres = nombres.filter(n => n.toUpperCase().includes(filtro));
+
+ deudasCache = nombres.map(n => ({ nombre: n, total: porCliente[n].total, creditos: porCliente[n].creditos }));
+
+ if (!nombres.length) {
+ listaEl.innerHTML = `<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">${filtro ? 'Ningún cliente coincide.' : 'No hay deudas pendientes.'}</div>`;
+ return;
+ }
+
+ listaEl.innerHTML = deudasCache.map((c, idx) => {
+ const detalle = c.creditos.length > 1
+ ? c.creditos.map(cr => `<div style="display:flex;justify-content:space-between;padding:4px 0 4px 14px;font-size:11px;color:var(--text2);">
+ <span>${cr.producto} (${cr.idCredito})</span>
+ <span>${cr.saldo.toLocaleString('es-PY')} Gs.</span>
+ </div>`).join('')
+ : '';
+ return `
+ <div class="deuda-item">
+ <div class="deuda-item-top">
+ <div class="deuda-item-info">
+ <span style="font-size:13px;font-weight:600;">${c.nombre}${c.creditos.length > 1 ? ` <span style="color:var(--purple);font-size:10px;">· ${c.creditos.length} créditos</span>` : ''}</span>
+ <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--gold);">${c.total.toLocaleString('es-PY')} Gs.</div>
+ </div>
+ <button class="deuda-share-btn" onclick="compartirDeudaCliente(${idx})">📤 Compartir</button>
+ </div>
+ ${detalle}
+ </div>`;
+ }).join('');
+}
+
+async function compartirDeudaCliente(idx) {
+ const c = deudasCache[idx];
+ if (!c) return;
+
+ let mensaje = `*ESTADO DE DEUDA — ALLSHOP*\n\n`;
+ mensaje += `👤 Cliente: *${c.nombre}*\n`;
+ mensaje += `💰 Deuda Total: *Gs. ${c.total.toLocaleString('es-PY')}*\n`;
+
+ if (c.creditos.length) {
+ mensaje += `\n*Detalle de Créditos y Cuotas Pendientes:*\n`;
+ c.creditos.forEach(cr => {
+ mensaje += `\n📦 *${cr.producto}* (${cr.idCredito})\n`;
+ mensaje += `  Saldo Crédito: Gs. ${cr.saldo.toLocaleString('es-PY')}\n`;
+ 
+ // Cuotas pendientes del crédito
+ const cuotasPend = cuotasRows.slice(1).filter(r => r[1] === cr.idCredito && r[7] !== 'PAGADA');
+ if (cuotasPend.length > 0) {
+ mensaje += `  _Cuotas pendientes (${cuotasPend.length}):_\n`;
+ cuotasPend.forEach(q => {
+ const saldoQ = parseMontoPY(q[6]);
+ mensaje += `  • Cuota ${q[3]} (Vence: ${fmtFechaPY(q[4])}): Gs. ${saldoQ.toLocaleString('es-PY')}\n`;
+ });
+ }
+ });
+ }
+ mensaje += `\n_Agradecemos tu preferencia._`;
+
+ const datos = { tipo: 'ESTADO', nombre: c.nombre, texto: mensaje, telefono: '' };
+ try {
+ abrirModalPostPdf(datos, generarEstadoCuentaPDF(c));
+ } catch(err) {
+ console.warn('Falló el PDF de estado de cuenta:', err);
+ window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`, '_blank');
+ }
+}
+
+// FLUJO DE CAJA & MOROSIDAD
+function switchFlujoTab(tab) {
+ document.getElementById('tab-flujo-caja').style.display = tab === 'caja' ? 'block' : 'none';
+ document.getElementById('tab-flujo-vencidos').style.display = tab === 'vencidos' ? 'block' : 'none';
+ document.getElementById('tab-btn-caja').className = 'flujo-tab ' + (tab === 'caja' ? 'active' : '');
+ document.getElementById('tab-btn-vencidos').className = 'flujo-tab ' + (tab === 'vencidos' ? 'active' : '');
+}
+
+function renderFlujoCaja() {
+ const mes = parseInt(document.getElementById('flujo-mes').value);
+ const anio = parseInt(document.getElementById('flujo-anio').value);
+
+ let cobrado = 0;
+ let pendiente = 0;
+ const cobrosLista = [];
+
+ // Filtrar cuotas por mes/año
+ cuotasRows.slice(1).forEach(r => {
+ if(!r[4]) return;
+ const fParts = r[4].split('-');
+ if(fParts.length < 3) return;
+ const fMes = parseInt(fParts[1]) - 1;
+ const fAnio = parseInt(fParts[0]);
+
+ if(fMes === mes && fAnio === anio) {
+ const saldo = parseMontoPY(r[6]);
+ const montoOriginal = parseMontoPY(r[5]);
+ const pagadoCuota = montoOriginal - saldo;
+
+ cobrado += pagadoCuota;
+ pendiente += saldo;
+
+ cobrosLista.push({
+ cliente: r[2],
+ idCredito: r[1],
+ nCuota: r[3],
+ vencimiento: r[4],
+ pagado: pagadoCuota,
+ saldo: saldo,
+ estado: r[7]
+ });
+ }
+ });
+
+ document.getElementById('flujo-total-cobrado').textContent = cobrado.toLocaleString('es-PY') + ' Gs.';
+ document.getElementById('flujo-total-pendiente').textContent = pendiente.toLocaleString('es-PY') + ' Gs.';
+ document.getElementById('flujo-total-esperado').textContent = (cobrado + pendiente).toLocaleString('es-PY') + ' Gs.';
+
+ const listEl = document.getElementById('flujo-cobros-lista');
+ if(!cobrosLista.length) {
+ listEl.innerHTML = `<div style="text-align:center;color:var(--text2);font-size:12px;padding:15px;">No hay movimientos ni vencimientos previstos para este mes.</div>`;
+ return;
+ }
+
+ listEl.innerHTML = cobrosLista.map(item => `
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;">
+ <div>
+ <div style="font-weight:700;">${item.cliente} <span style="font-size:10px;color:var(--text2);">(Cuota ${item.nCuota})</span></div>
+ <div style="font-size:10px;color:var(--text2);">Vence: ${item.vencimiento} · Estado: ${item.estado}</div>
+ </div>
+ <div style="text-align:right;">
+ <div style="color:var(--green);font-weight:700;">+${item.pagado.toLocaleString('es-PY')} Gs.</div>
+ ${item.saldo > 0 ? `<div style="color:var(--gold);font-size:10px;">Falta: ${item.saldo.toLocaleString('es-PY')} Gs.</div>` : ''}
+ </div>
+ </div>
+ `).join('');
+}
+
+function renderFlujoVencidos() {
+ const hoy = new Date().toISOString().split('T')[0];
+ const vencidos = [];
+
+ cuotasRows.slice(1).forEach(r => {
+ const saldo = parseMontoPY(r[6]);
+ const vence = r[4];
+ if(saldo > 0 && vence && vence < hoy) {
+ vencidos.push({
+ idCuota: r[0],
+ idCredito: r[1],
+ cliente: r[2],
+ nCuota: r[3],
+ vencimiento: vence,
+ saldo: saldo
+ });
+ }
+ });
+
+ const listEl = document.getElementById('flujo-vencidos-lista');
+ if(!vencidos.length) {
+ listEl.innerHTML = `<div style="text-align:center;color:var(--green);font-size:12px;padding:20px;">🎉 ¡Excelente! No hay cuotas vencidas pendientes.</div>`;
+ return;
+ }
+
+ listEl.innerHTML = vencidos.map(v => `
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:12px;margin-bottom:8px;">
+ <div>
+ <div style="font-weight:700;font-size:13px;">${v.cliente}</div>
+ <div style="font-size:11px;color:var(--red);">Cuota ${v.nCuota} · Venció el ${v.vencimiento}</div>
+ <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px;">Debe: Gs. ${v.saldo.toLocaleString('es-PY')}</div>
+ </div>
+ <button class="deuda-share-btn" onclick="notificarMoroso('${v.cliente}','${v.nCuota}','${v.vencimiento}',${v.saldo})">📲 Notificar</button>
+ </div>
+ `).join('');
+}
+
+function notificarMoroso(cliente, cuota, vence, saldo) {
+ const msj = `Hola *${cliente}*, te saludamos de *AllShop*. Te recordamos amablemente que tu Cuota N° ${cuota} por un valor de *Gs. ${saldo.toLocaleString('es-PY')}* venció el día ${vence}. ¿Nos confirmás cuándo podrías realizar el pago? ¡Muchas gracias!`;
+ window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msj)}`, '_blank');
+}
+
+// FORMULARIO VENTA & CALCULOS
 function vfManejarCliente(val) {
-  const box = document.getElementById('vf-nuevo-cliente-box');
-  box.style.display = val === '__nuevo__' ? 'block' : 'none';
-  if(val !== '__nuevo__') {
-    document.getElementById('vf-nombre-nuevo').value = '';
-  }
+ document.getElementById('vf-nuevo-cliente-box').style.display = val === '__nuevo__' ? 'block' : 'none';
+ if(val !== '__nuevo__') document.getElementById('vf-nombre-nuevo').value = '';
 }
-
 function vfGetNombre() {
-  const sel = document.getElementById('vf-nombre-sel').value;
-  if(sel === '__nuevo__') {
-    return document.getElementById('vf-nombre-nuevo').value.trim().toUpperCase();
-  }
-  return sel.trim().toUpperCase();
+ const sel = document.getElementById('vf-nombre-sel').value;
+ return sel === '__nuevo__' ? document.getElementById('vf-nombre-nuevo').value.trim().toUpperCase() : sel.trim().toUpperCase();
 }
-
-// ── Categoría "OTRO" → mostrar campo texto ──
 function vfCheckOtraCategoria(val) {
-  const field = document.getElementById('vf-producto-otro-field');
-  field.style.display = val === 'OTRO' ? 'flex' : 'none';
+ document.getElementById('vf-producto-otro-field').style.display = val === 'OTRO' ? 'flex' : 'none';
 }
 function vfGetProducto() {
-  const sel = document.getElementById('vf-producto').value;
-  if(sel === 'OTRO') {
-    return document.getElementById('vf-producto-otro').value.trim().toUpperCase() || 'OTRO';
-  }
-  return sel;
+ const sel = document.getElementById('vf-producto').value;
+ return sel === 'OTRO' ? (document.getElementById('vf-producto-otro').value.trim().toUpperCase() || 'OTRO') : sel;
 }
 
-// ══════════════════════════════════════════════════════════════════
-// COBRO — seleccionar cliente y mostrar saldo
-// ══════════════════════════════════════════════════════════════════
-// ── Créditos del cliente (desde el Apps Script) ──
-let pfCreditos = [];
-let pfCreditoSel = null;
+function pfSeleccionarCliente(idCredito) {
+ const box = document.getElementById('pf-saldo-box');
+ if(!idCredito || creditosRows.length < 2){ box.style.display='none'; return; }
 
-async function pfCargarCreditos(nombre) {
-  const box = document.getElementById('pf-creditos');
-  pfCreditos = []; pfCreditoSel = null;
-  if(!nombre){ box.style.display='none'; box.innerHTML=''; return; }
-  box.style.display = 'block';
-  box.innerHTML = '<div class="pd-empty">Buscando créditos…</div>';
-  try {
-    const res  = await fetch(SCRIPT_URL + '?accion=creditos&nombre=' + encodeURIComponent(nombre));
-    const json = await res.json();
-    if(!json.ok) throw new Error(json.error || 'respuesta inválida');
-    if(document.getElementById('pf-nombre-sel').value.trim().toUpperCase() !== nombre) return; // cambió de cliente
-    pfCreditos = json.creditos || [];
-    if(pfCreditos.length === 1) pfElegirCredito(pfCreditos[0].idCredito);
-    else pfRenderCreditos();
-  } catch(e) {
-    box.innerHTML = `<div class="pd-empty">No se pudieron cargar los créditos (${esc(e.message)}).</div>`;
-  }
+ const credito = creditosRows.slice(1).find(r => r[0] === idCredito);
+ if(!credito){ box.style.display='none'; return; }
+
+ const cuotasCredito = cuotasRows.slice(1).filter(r => r[1] === idCredito);
+ const cuotasPendientes = cuotasCredito.filter(r => r[7] !== 'PAGADA');
+ const saldo = saldoPendienteCredito(idCredito);
+ const cantCuotas = cuotasPendientes.length;
+ const montoCuota = parseMontoPY(credito[14]);
+ const nombreCliente = credito[3];
+ const otrosCreditos = creditosRows.slice(1).filter(r => r[3] === nombreCliente && r[15] === 'FINANCIADO');
+ const deudaTotalCliente = otrosCreditos.reduce((acc,r) => acc + saldoPendienteCredito(r[0]), 0);
+
+ const mesesHTML = cuotasPendientes.map(r => `
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+ <span style="font-size:11px;color:var(--text2);">Cuota ${r[3]} · Vence: ${r[4]}</span>
+ <span style="font-size:12px;font-weight:700;color:var(--gold);">${parseMontoPY(r[6]).toLocaleString('es-PY')} Gs.</span>
+ </div>
+ `);
+
+ box.style.display = 'block';
+ box.innerHTML = `
+ ${otrosCreditos.length > 1 ? `
+ <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:8px 12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+ <span style="font-size:10px;color:var(--text2);">⚠️ ${nombreCliente} posee${otrosCreditos.length} créditos activos — Deuda total:</span>
+ <span style="font-size:13px;font-weight:700;color:var(--gold);">${deudaTotalCliente.toLocaleString('es-PY')} Gs.</span>
+ </div>` : ''}
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:${mesesHTML.length?'14px':'0'};">
+ <div>
+ <div style="font-size:10px;color:var(--text2);text-transform:uppercase;">Saldo este crédito</div>
+ <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--red);">${Math.abs(saldo).toLocaleString('es-PY')} Gs.</div>
+ </div>
+ <div>
+ <div style="font-size:10px;color:var(--text2);text-transform:uppercase;">Pendientes</div>
+ <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);">${cantCuotas} cuotas</div>
+ </div>
+ </div>
+ ${mesesHTML.length ? `
+ <div style="font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:8px;">📅 Próximos Vencimientos</div>
+ ${mesesHTML.join('')}
+ ` : ''}
+ `;
 }
 
-function pfRenderCreditos() {
-  const box = document.getElementById('pf-creditos');
-  if(!pfCreditos.length){
-    box.innerHTML = '<div class="pd-empty">Este cliente no tiene créditos con saldo pendiente.</div>';
-    return;
-  }
-  const titulo = pfCreditos.length > 1
-    ? `<div class="vf-label" style="margin-bottom:8px;">Elegí qué crédito cobrar (${pfCreditos.length} activos)</div>`
-    : `<div class="vf-label" style="margin-bottom:8px;">Crédito</div>`;
-  box.innerHTML = titulo + pfCreditos.map(c => {
-    const sel = c.idCredito === pfCreditoSel;
-    const cuotasHTML = (sel && c.cuotas.length) ? `<div class="pf-cuotas">${c.cuotas.map(q => {
-      const est = (q.estado || '').toUpperCase();
-      const cls = est === 'PAGADA' ? 'pagada' : est === 'PARCIAL' ? 'parcial' : '';
-      const montoTxt = est === 'PARCIAL'
-        ? `${q.saldo.toLocaleString('es-PY')} de ${q.monto.toLocaleString('es-PY')} Gs.`
-        : `${q.monto.toLocaleString('es-PY')} Gs.`;
-      const tag = est === 'PAGADA' ? '<span class="pf-q-tag" style="color:var(--green)">✓</span>'
-                : est === 'PARCIAL' ? '<span class="pf-q-tag" style="color:var(--gold)">PARCIAL</span>' : '';
-      return `<div class="pf-cuota-line ${cls}">
-        <span>Cuota ${q.n}/${c.cuotas.length} · ${esc(q.vence)}${tag}</span>
-        <span class="pf-q-monto">${montoTxt}</span>
-      </div>`;
-    }).join('')}</div>` : '';
-    return `<div class="pf-cred-card ${sel ? 'sel' : ''}" onclick="pfElegirCredito('${esc(c.idCredito)}')">
-      <div class="pf-cred-top">
-        <div>
-          <div class="pf-cred-id">${esc(c.idCredito)} · ${esc(c.fecha)}</div>
-          <div class="pf-cred-prod">${esc(c.observacion || c.producto || '—')}</div>
-        </div>
-        <div class="pf-cred-saldo">${c.saldo.toLocaleString('es-PY')} Gs.</div>
-      </div>
-      ${cuotasHTML}
-    </div>`;
-  }).join('');
-}
-
-function pfElegirCredito(id) {
-  pfCreditoSel = id;
-  const c = pfCreditos.find(x => x.idCredito === id);
-  if(c){
-    // Sugerir monto de la próxima cuota pendiente
-    const prox = c.cuotas.find(q => (q.estado || '').toUpperCase() !== 'PAGADA');
-    const montoEl = document.getElementById('pf-monto');
-    if(prox && !montoEl.value) montoEl.value = Math.round(prox.saldo);
-    // Completar categoría / empresa si están vacías
-    const prodSel = document.getElementById('pf-producto');
-    if(!prodSel.value && c.producto && [...prodSel.options].some(o => o.value === c.producto)) prodSel.value = c.producto;
-    const emp = document.getElementById('pf-empresa');
-    if(!emp.value && c.empresa) emp.value = c.empresa;
-    const obs = document.getElementById('pf-obs');
-    if(!obs.value && prox) obs.value = `CUOTA ${prox.n}/${c.cuotas.length} ${c.observacion || ''}`.trim();
-  }
-  pfRenderCreditos();
-}
-
-function pfSeleccionarCliente(name) {
-  pfCargarCreditos(name.trim().toUpperCase());
-  const nameUp = name.trim().toUpperCase();
-  const box = document.getElementById('pf-saldo-box');
-  if(!nameUp || cuoteroRows.length < 2){ box.style.display='none'; return; }
-
-  const headers = cuoteroRows[0]; // fila 0 = encabezados
-  const row = cuoteroRows.slice(1).find(r => r[0] && r[0].toString().toUpperCase() === nameUp);
-  if(!row){ box.style.display='none'; return; }
-
-  const saldo      = parseMontoPY(row[1]); // col B = SUM de MOVIMIENTOS
-  const cantCuotas = parseInt(row[2]) || 0; // col C = cant cuota
-  const montoCuota = parseMontoPY(row[3]);  // col D = monto cuota
-
-  // Columnas E en adelante = meses (encabezado = "junio 2026", "julio 2026", etc.)
-  const mesesHTML = [];
-  for(let i = 4; i < headers.length; i++){
-    const mes   = headers[i]?.toString().trim();
-    const valor = parseMontoPY(row[i]);
-    if(mes && valor > 0){
-      mesesHTML.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <span style="font-size:11px;color:var(--text2);text-transform:capitalize;">${mes}</span>
-        <span style="font-size:12px;font-weight:700;color:var(--gold);">${valor.toLocaleString('es-PY')} Gs.</span>
-      </div>`);
-    }
-  }
-
-  box.style.display = 'block';
-  box.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:${mesesHTML.length?'14px':'0'};">
-      <div>
-        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Deuda total</div>
-        <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--red);">${Math.abs(saldo).toLocaleString('es-PY')} Gs.</div>
-      </div>
-      <div>
-        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Cuotas · Monto</div>
-        <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);">${cantCuotas} × ${montoCuota > 0 ? montoCuota.toLocaleString('es-PY')+' Gs.' : '—'}</div>
-      </div>
-    </div>
-    ${mesesHTML.length ? `
-      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">📅 Pagos por mes</div>
-      ${mesesHTML.join('')}
-    ` : ''}
-  `;
-}
-
-// ══════════════════════════════════════════════════════════════════
-// CALCULADORA VENTA
-// ══════════════════════════════════════════════════════════════════
 function vfRecalc() {
-  const costo = parseFloat(document.getElementById('vf-precioreal').value)  || 0;
-  const venta = parseFloat(document.getElementById('vf-precioventa').value) || 0;
-  const pct   = parseFloat(document.getElementById('vf-porcentaje').value) / 100 || 0;
-  if(costo > 0 && venta > 0) {
-    const descuento = Math.round(costo * pct);
-    const ganancia  = venta - (costo - descuento); // ✅ CORREGIDO: venta - costo neto
-    document.getElementById('vf-disp-descuento').textContent  = descuento > 0 ? descuento.toLocaleString('es-PY') + ' Gs.' : '—';
-    document.getElementById('vf-disp-ganancias').textContent  = ganancia.toLocaleString('es-PY') + ' Gs.';
-    document.getElementById('vf-disp-movimiento').textContent = venta.toLocaleString('es-PY') + ' Gs.';
-    ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.add('lit'));
-  } else {
-    document.getElementById('vf-disp-descuento').textContent  = '—';
-    document.getElementById('vf-disp-ganancias').textContent  = '—';
-    document.getElementById('vf-disp-movimiento').textContent = '—';
-    ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.remove('lit'));
-  }
-  vfGenerarCuotas();
+ const costo = parseFloat(document.getElementById('vf-precioreal').value) || 0;
+ const venta = parseFloat(document.getElementById('vf-precioventa').value) || 0;
+ const pct = parseFloat(document.getElementById('vf-porcentaje').value) / 100 || 0;
+ if(costo > 0 && venta > 0) {
+ const descuento = Math.round(costo * pct);
+ const ganancia = venta - (costo - descuento);
+ document.getElementById('vf-disp-descuento').textContent = descuento > 0 ? descuento.toLocaleString('es-PY') + ' Gs.' : '—';
+ document.getElementById('vf-disp-ganancias').textContent = ganancia.toLocaleString('es-PY') + ' Gs.';
+ document.getElementById('vf-disp-movimiento').textContent = venta.toLocaleString('es-PY') + ' Gs.';
+ ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.add('lit'));
+ } else {
+ document.getElementById('vf-disp-descuento').textContent = '—';
+ document.getElementById('vf-disp-ganancias').textContent = '—';
+ document.getElementById('vf-disp-movimiento').textContent = '—';
+ ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.remove('lit'));
+ }
+ vfGenerarCuotas();
 }
-function vfRecalcFromPct() {
-  vfRecalc();
-}
+function vfRecalcFromPct() { vfRecalc(); }
 
-// ══════════════════════════════════════════════════════════════════
-// CUOTAS DINÁMICAS
-// ══════════════════════════════════════════════════════════════════
 function vfGenerarCuotas() {
-  const n    = parseInt(document.getElementById('vf-ncuotas').value) || 0;
-  const sec  = document.getElementById('vf-cuotas-section');
-  const grid = document.getElementById('vf-cuotas-grid');
-  const mcRow= document.getElementById('vf-montocuota-row');
-  const venta    = parseFloat(document.getElementById('vf-precioventa').value) || 0;
-  const anticipo = parseFloat(document.getElementById('vf-anticipo').value)    || 0;
+ const n = parseInt(document.getElementById('vf-ncuotas').value) || 0;
+ const sec = document.getElementById('vf-cuotas-section');
+ const grid = document.getElementById('vf-cuotas-grid');
+ const mcRow= document.getElementById('vf-montocuota-row');
+ const venta = parseFloat(document.getElementById('vf-precioventa').value) || 0;
+ const anticipo = parseFloat(document.getElementById('vf-anticipo').value) || 0;
 
-  if(n <= 0){
-    sec.style.display  = 'none';
-    mcRow.style.display= 'none';
-    grid.innerHTML     = '';
-    document.getElementById('vf-montocuota').value = '';
-    return;
-  }
-  const mc = Math.round((venta - anticipo) / n);
-  document.getElementById('vf-montocuota').value = mc || '';
-  sec.style.display   = 'block';
-  mcRow.style.display = 'block';
-  grid.innerHTML      = '';
-  const hoy = new Date();
-  for(let i=1;i<=n;i++){
-    const d = new Date(hoy.getFullYear(), hoy.getMonth() + i, 1);
-    const fechaStr = d.toISOString().split('T')[0];
-    grid.innerHTML += `<div class="vf-cuota-row">
-      <span class="vf-cuota-num">Cuota ${i}</span>
-      <input class="vf-cuota-input" type="date" id="vf-cuota-fecha-${i}" value="${fechaStr}">
-      <input class="vf-cuota-input" type="number" id="vf-cuota-monto-${i}" value="${mc}" placeholder="Monto">
-    </div>`;
-  }
+ if(n <= 0){
+ sec.style.display = 'none'; mcRow.style.display= 'none';
+ grid.innerHTML = ''; document.getElementById('vf-montocuota').value = '';
+ return;
+ }
+ const mc = Math.round((venta - anticipo) / n);
+ document.getElementById('vf-montocuota').value = mc || '';
+ sec.style.display = 'block'; mcRow.style.display = 'block';
+ grid.innerHTML = '';
+ const hoy = new Date();
+ for(let i=1;i<=n;i++){
+ const d = new Date(hoy.getFullYear(), hoy.getMonth() + i, hoy.getDate());
+ const fechaStr = d.toISOString().split('T')[0];
+ grid.innerHTML += `<div class="vf-cuota-row">
+ <span class="vf-cuota-num">Cuota ${i}</span>
+ <input class="vf-cuota-input" type="date" id="vf-cuota-fecha-${i}" value="${fechaStr}">
+ <input class="vf-cuota-input" type="number" id="vf-cuota-monto-${i}" value="${mc}">
+ </div>`;
+ }
 }
 function vfSyncCuotaManual() {
-  const n  = parseInt(document.getElementById('vf-ncuotas').value)     || 0;
-  const mc = parseFloat(document.getElementById('vf-montocuota').value) || 0;
-  for(let i=1;i<=n;i++){
-    const el = document.getElementById(`vf-cuota-monto-${i}`);
-    if(el) el.value = mc;
-  }
+ const n = parseInt(document.getElementById('vf-ncuotas').value) || 0;
+ const mc = parseFloat(document.getElementById('vf-montocuota').value) || 0;
+ for(let i=1;i<=n;i++){
+ const el = document.getElementById(`vf-cuota-monto-${i}`);
+ if(el) el.value = mc;
+ }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════════
 function vfFechaASerial(fechaStr) {
-  const d = new Date(fechaStr + 'T12:00:00');
-  return Math.floor((d - new Date(1899,11,30)) / 86400000);
+ const d = new Date(fechaStr + 'T12:00:00');
+ return Math.floor((d - new Date(1899,11,30)) / 86400000);
 }
 function vfToast(id, ok, msg) {
-  const el = document.getElementById(id);
-  el.className = 'vf-toast show ' + (ok ? 'vf-toast-ok' : 'vf-toast-err');
-  el.innerHTML = (ok ? '✅' : '⚠️') + ' ' + msg;
-  setTimeout(() => el.classList.remove('show'), 7000);
+ const el = document.getElementById(id);
+ el.className = 'vf-toast show ' + (ok ? 'vf-toast-ok' : 'vf-toast-err');
+ el.innerHTML = (ok ? '✅' : '⚠️') + ' ' + msg;
+ setTimeout(() => el.classList.remove('show'), 7000);
 }
 function setBtnLoading(btnId, spinnerId, labelId, loading, label) {
-  document.getElementById(btnId).disabled = loading;
-  document.getElementById(spinnerId).style.display = loading ? 'block' : 'none';
-  document.getElementById(labelId).textContent = loading ? 'Enviando…' : label;
+ document.getElementById(btnId).disabled = loading;
+ document.getElementById(spinnerId).style.display = loading ? 'block' : 'none';
+ document.getElementById(labelId).textContent = loading ? 'Enviando…' : label;
 }
 
 // ══════════════════════════════════════════════════════════════════
-// ENVIAR VENTA
+// RECIBOS PDF — cuotas pagadas tachadas + compartir archivo
+// ══════════════════════════════════════════════════════════════════
+const PDF_C = {
+ navy:[13,17,25], blue:[37,99,235], blueLight:[224,235,255],
+ gold:[180,83,9], goldLight:[254,243,199],
+ green:[5,150,105], greenLight:[209,250,229],
+ red:[220,38,38], redLight:[254,226,226],
+ dark:[15,23,42], gray:[100,116,139], muted:[165,174,190],
+ line:[226,232,240], panel:[248,250,252]
+};
+
+function fmtGs(n) { return 'Gs. ' + Math.round(Math.abs(n || 0)).toLocaleString('es-PY'); }
+function fmtFechaPY(s) {
+ if (!s) return '—';
+ const m = String(s).trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+ return m ? `${m[3]}/${m[2]}/${m[1]}` : String(s).trim();
+}
+function esc(s) {
+ return (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function nombreArchivoSeguro(s) {
+ return String(s || 'cliente').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+function hoyISO() { return new Date().toISOString().split('T')[0]; }
+
+// Cuotas de un crédito como objetos ordenados
+function cuotasDeCredito(idCredito) {
+ return cuotasRows.slice(1)
+ .filter(r => r[1] === idCredito)
+ .map(r => ({
+ n: parseInt(r[3]) || 0,
+ vence: r[4],
+ monto: parseMontoPY(r[5]),
+ saldo: parseMontoPY(r[6]),
+ estado: (r[7] || 'PENDIENTE').toString().trim().toUpperCase()
+ }))
+ .sort((a, b) => a.n - b.n);
+}
+
+// Simula el pago igual que aplicarPagoACuotas() del Apps Script,
+// así el recibo ya muestra la cuota recién pagada como PAGADA.
+function aplicarPagoSimulado(cuotas, monto) {
+ let resto = Math.abs(monto);
+ return cuotas.map(q => {
+ const c = { ...q };
+ if (resto > 0 && c.estado !== 'PAGADA') {
+ if (resto >= c.saldo) { resto -= c.saldo; c.saldo = 0; c.estado = 'PAGADA'; c.hoy = true; }
+ else { c.saldo -= resto; resto = 0; c.estado = 'PARCIAL'; c.hoy = true; }
+ }
+ return c;
+ });
+}
+
+// ── Bloques reutilizables del PDF ──
+function pdfEncabezado(doc, C, color, titulo, numero, fecha) {
+ const W = doc.internal.pageSize.getWidth(), mx = 15;
+ doc.setFillColor(...C.navy); doc.rect(0, 0, W, 32, 'F');
+ doc.setFillColor(...color); doc.rect(0, 32, W, 1.4, 'F');
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(255,255,255); doc.text('ALLSHOP', mx, 15);
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(170,185,214); doc.text('VENTAS & COBROS', mx, 20.5);
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(255,255,255); doc.text(titulo, W - mx, 14, { align: 'right' });
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(170,185,214);
+ doc.text(numero ? `N.º ${numero} · ${fecha}` : fecha, W - mx, 20.5, { align: 'right' });
+}
+
+function pdfTarjetaCliente(doc, mx, y, pageWidth, C, nombre, labelDer, valorDer) {
+ const anchoTotal = pageWidth - 2 * mx;
+ const colMidX = mx + anchoTotal * 0.66;
+ const anchoNombre = colMidX - (mx + 8) - 6;
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+ const lineas = doc.splitTextToSize(String(nombre || '—').toUpperCase(), anchoNombre);
+ const altoCard = Math.max(22, 16 + (lineas.length - 1) * 6 + 6);
+
+ doc.setDrawColor(...C.line); doc.setLineWidth(0.2); doc.setFillColor(...C.panel);
+ doc.roundedRect(mx, y, anchoTotal, altoCard, 3, 3, 'FD');
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...C.gray);
+ doc.text('CLIENTE', mx + 8, y + 8);
+ doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark); doc.setFontSize(13);
+ lineas.forEach((l, i) => doc.text(l, mx + 8, y + 16 + i * 6));
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...C.gray);
+ doc.text(labelDer, colMidX, y + 8);
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...C.dark);
+ doc.text(String(valorDer), colMidX, y + 16);
+ return y + altoCard;
+}
+
+function pdfEspacio(doc, y, alto) {
+ if (y + alto > doc.internal.pageSize.getHeight() - 22) { doc.addPage(); return 20; }
+ return y;
+}
+
+function pdfCajaMonto(doc, mx, y, C, etiqueta, monto, accent, fondo) {
+ const W = doc.internal.pageSize.getWidth();
+ doc.setFillColor(...fondo); doc.setDrawColor(...accent); doc.setLineWidth(0.4);
+ doc.roundedRect(mx, y, W - 2 * mx, 22, 3, 3, 'FD');
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...accent);
+ doc.text(etiqueta, mx + 8, y + 9);
+ doc.setFontSize(17); doc.setTextColor(...C.dark);
+ doc.text(fmtGs(monto), W - mx - 8, y + 15, { align: 'right' });
+ return y + 22;
+}
+
+function pdfCajaSaldo(doc, mx, y, C, saldo) {
+ y = pdfEspacio(doc, y, 24);
+ if (saldo > 0) return pdfCajaMonto(doc, mx, y, C, 'SALDO PENDIENTE', saldo, C.red, C.redLight);
+ return pdfCajaMonto(doc, mx, y, C, 'CUENTA SALDADA', 0, C.green, C.greenLight);
+}
+
+// Tabla de cuotas: las PAGADAS salen tachadas y en gris.
+function pdfTablaCuotas(doc, mx, y, C, cuotas, titulo) {
+ const hoy = hoyISO();
+ y = pdfEspacio(doc, y, 30);
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(...C.dark);
+ doc.text(titulo, mx, y);
+ y += 3;
+
+ const meta = cuotas.map(q => {
+ let estado = 'PENDIENTE', color = C.gray;
+ if (q.estado === 'PAGADA') { estado = q.hoy ? 'PAGADA HOY' : 'PAGADA'; color = C.green; }
+ else if (q.estado === 'PARCIAL') { estado = 'PARCIAL'; color = C.gold; }
+ else if (q.vence && String(q.vence) < hoy) { estado = 'VENCIDA'; color = C.red; }
+ return { ...q, label: estado, color };
+ });
+
+ const total = cuotas.reduce((a, q) => a + q.monto, 0);
+ const pendiente = cuotas.reduce((a, q) => a + q.saldo, 0);
+
+ doc.autoTable({
+ startY: y, margin: { left: mx, right: mx },
+ head: [['Cuota', 'Vencimiento', 'Monto', 'Saldo', 'Estado']],
+ body: meta.map(q => [
+ `${q.n} de ${cuotas.length}`,
+ fmtFechaPY(q.vence),
+ fmtGs(q.monto),
+ q.estado === 'PAGADA' ? '—' : fmtGs(q.saldo),
+ q.label
+ ]),
+ foot: [['', 'TOTAL', fmtGs(total), fmtGs(pendiente), 'pendiente']],
+ theme: 'grid',
+ styles: { font: 'helvetica', fontSize: 8.5, textColor: C.dark, lineColor: C.line, lineWidth: 0.1, cellPadding: 2.4, valign: 'middle' },
+ headStyles: { fillColor: C.navy, textColor: 255, fontStyle: 'bold' },
+ footStyles: { fillColor: C.panel, textColor: C.dark, fontStyle: 'bold' },
+ columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'center', cellWidth: 28 } },
+ didParseCell: (d) => {
+ if (d.section !== 'body') { d.cell.styles.halign = ['left','center','right','right','center'][d.column.index]; return; }
+ const q = meta[d.row.index];
+ if (q.estado === 'PAGADA') {
+ d.cell.styles.textColor = C.muted;
+ if (q.hoy) d.cell.styles.fillColor = C.greenLight;
+ }
+ if (d.column.index === 4) { d.cell.styles.textColor = q.color; d.cell.styles.fontStyle = 'bold'; d.cell.styles.fontSize = 7.5; }
+ },
+ didDrawCell: (d) => {
+ if (d.section !== 'body' || d.column.index > 3) return;
+ if (meta[d.row.index].estado !== 'PAGADA') return;
+ const txt = (d.cell.text || []).join(' ').trim();
+ if (!txt || txt === '—') return;
+ doc.setFont('helvetica', d.cell.styles.fontStyle || 'normal');
+ doc.setFontSize(d.cell.styles.fontSize);
+ const w = doc.getTextWidth(txt);
+ const ha = d.cell.styles.halign;
+ const x = ha === 'right' ? d.cell.x + d.cell.width - d.cell.padding('right') - w
+ : ha === 'center' ? d.cell.x + (d.cell.width - w) / 2
+ : d.cell.x + d.cell.padding('left');
+ const yy = d.cell.y + d.cell.height / 2;
+ doc.setDrawColor(...C.muted); doc.setLineWidth(0.3);
+ doc.line(x - 0.6, yy, x + w + 0.6, yy);
+ }
+ });
+ return doc.lastAutoTable.finalY;
+}
+
+function pdfPie(doc, C) {
+ const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), mx = 15;
+ const total = doc.internal.getNumberOfPages();
+ const ahora = new Date();
+ const gen = `Generado el ${ahora.toLocaleDateString('es-PY')} ${ahora.toLocaleTimeString('es-PY', { hour: '2-digit', minute: '2-digit' })}`;
+ for (let i = 1; i <= total; i++) {
+ doc.setPage(i);
+ doc.setDrawColor(...C.line); doc.setLineWidth(0.2); doc.line(mx, H - 15, W - mx, H - 15);
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...C.gray);
+ doc.text('Gracias por tu preferencia · ALLSHOP', mx, H - 10);
+ doc.text(`${gen} · Página ${i} de ${total}`, W - mx, H - 10, { align: 'right' });
+ }
+}
+
+function pdfTerminar(doc, nombreArchivo) {
+ pdfPie(doc, PDF_C);
+ const blob = doc.output('blob');
+ const file = new File([blob], nombreArchivo, { type: 'application/pdf' });
+ return { blob, file, nombreArchivo };
+}
+
+// ── RECIBO DE VENTA ──
+function generarReciboPDFVenta(datos) {
+ const { jsPDF } = window.jspdf;
+ const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+ const C = PDF_C, W = doc.internal.pageSize.getWidth(), mx = 15;
+ const tieneCuotas = datos.cuotas && datos.cuotas.length > 0;
+
+ pdfEncabezado(doc, C, C.blue, tieneCuotas ? 'PROFORMA / RECIBO DE VENTA' : 'RECIBO DE VENTA',
+ 'V-' + Date.now().toString().slice(-8), fmtFechaPY(datos.fecha));
+
+ let y = pdfTarjetaCliente(doc, mx, 42, W, C, datos.nombre, 'MODALIDAD', tieneCuotas ? `${datos.cuotas.length} cuotas` : 'Contado') + 6;
+
+ const resumen = [['Producto / Cat.', datos.producto || '—']];
+ if (datos.observacion) resumen.push(['Detalle', datos.observacion]);
+ if (datos.empresa) resumen.push(['Empresa', datos.empresa]);
+ resumen.push(['Precio total', fmtGs(datos.movimiento)]);
+ if (datos.anticipo > 0) resumen.push(['Anticipo pagado', fmtGs(datos.anticipo)]);
+
+ doc.autoTable({
+ startY: y, margin: { left: mx, right: mx }, theme: 'plain',
+ styles: { font: 'helvetica', fontSize: 9, textColor: C.dark, cellPadding: 1.8 },
+ columnStyles: { 0: { textColor: C.gray, cellWidth: 38 }, 1: { fontStyle: 'bold' } },
+ body: resumen
+ });
+ y = doc.lastAutoTable.finalY + 7;
+
+ if (tieneCuotas) {
+ const cuotas = datos.cuotas.map(c => ({ n: c.num, vence: c.fecha, monto: c.monto || 0, saldo: c.monto || 0, estado: 'PENDIENTE' }));
+ y = pdfTablaCuotas(doc, mx, y, C, cuotas, 'PLAN DE CUOTAS') + 8;
+ }
+
+ pdfCajaSaldo(doc, mx, y, C, Math.abs(datos.saldoActual));
+ return pdfTerminar(doc, `Recibo_Venta_${nombreArchivoSeguro(datos.nombre)}_${datos.fecha}.pdf`);
+}
+
+// ── RECIBO DE COBRO ──
+function generarReciboPDFPago(datos) {
+ const { jsPDF } = window.jspdf;
+ const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+ const C = PDF_C, W = doc.internal.pageSize.getWidth(), mx = 15;
+
+ pdfEncabezado(doc, C, C.green, 'COMPROBANTE DE COBRO', 'P-' + Date.now().toString().slice(-8), fmtFechaPY(datos.fecha));
+
+ let y = pdfTarjetaCliente(doc, mx, 42, W, C, datos.nombre, 'FECHA DE PAGO', fmtFechaPY(datos.fecha)) + 6;
+ y = pdfCajaMonto(doc, mx, y, C, 'MONTO RECIBIDO', datos.movimiento, C.green, C.greenLight) + 5;
+
+ // Crédito al que se aplicó
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...C.gray);
+ const lineaCredito = doc.splitTextToSize(
+ `Aplicado a: ${[datos.producto, datos.observacionCredito].filter(Boolean).join(' — ') || '—'}  (${datos.idCredito})`,
+ W - 2 * mx);
+ doc.text(lineaCredito, mx, y + 3);
+ y += 4 + lineaCredito.length * 4;
+ if (datos.observacion) {
+ const obsL = doc.splitTextToSize(`Nota: ${datos.observacion}`, W - 2 * mx);
+ doc.text(obsL, mx, y + 1); y += obsL.length * 4 + 1;
+ }
+ y += 4;
+
+ if (datos.cuotas && datos.cuotas.length) {
+ y = pdfTablaCuotas(doc, mx, y, C, datos.cuotas, 'ESTADO DE CUOTAS') + 4;
+ doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...C.gray);
+ doc.text('Las cuotas tachadas ya están pagadas.', mx, y + 2);
+ y += 8;
+ }
+
+ y = pdfCajaSaldo(doc, mx, y, C, datos.saldoActual) + 5;
+
+ if (datos.otrosCreditosCount > 1) {
+ y = pdfEspacio(doc, y, 16);
+ doc.setFillColor(...C.goldLight); doc.setDrawColor(...C.gold); doc.setLineWidth(0.2);
+ doc.roundedRect(mx, y, W - 2 * mx, 14, 2, 2, 'FD');
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...C.gold);
+ doc.text(`NOTA: tenés ${datos.otrosCreditosCount} créditos activos con ALLSHOP.`, mx + 6, y + 6);
+ doc.setFont('helvetica', 'normal'); doc.setTextColor(...C.dark);
+ doc.text(`Deuda total sumando todos: ${fmtGs(datos.deudaTotalCliente)}`, mx + 6, y + 11);
+ }
+
+ return pdfTerminar(doc, `Recibo_Cobro_${nombreArchivoSeguro(datos.nombre)}_${datos.fecha}.pdf`);
+}
+
+// ── ESTADO DE CUENTA (desde "Ver Deudas") ──
+function generarEstadoCuentaPDF(c) {
+ const { jsPDF } = window.jspdf;
+ const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+ const C = PDF_C, W = doc.internal.pageSize.getWidth(), mx = 15;
+ const hoy = hoyISO();
+
+ pdfEncabezado(doc, C, C.gold, 'ESTADO DE CUENTA', '', fmtFechaPY(hoy));
+ let y = pdfTarjetaCliente(doc, mx, 42, W, C, c.nombre, 'CRÉDITOS ACTIVOS', String(c.creditos.length)) + 8;
+
+ c.creditos.forEach(cr => {
+ const fila = creditosRows.slice(1).find(r => r[0] === cr.idCredito) || [];
+ y = pdfEspacio(doc, y, 36);
+ doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(...C.dark);
+ doc.text(`${cr.producto || 'Crédito'}  ·  ${cr.idCredito}`, mx, y);
+ doc.setTextColor(...C.red); doc.text(fmtGs(cr.saldo), W - mx, y, { align: 'right' });
+ y += 4.5;
+ const det = [fila[6], fila[1] ? 'Compra: ' + fmtFechaPY(fila[1]) : ''].filter(Boolean).join(' · ');
+ if (det) {
+ doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...C.gray);
+ const dl = doc.splitTextToSize(det, W - 2 * mx);
+ doc.text(dl, mx, y); y += dl.length * 3.8;
+ }
+ y += 2;
+ y = pdfTablaCuotas(doc, mx, y, C, cuotasDeCredito(cr.idCredito), 'CUOTAS') + 9;
+ });
+
+ doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...C.gray);
+ y = pdfEspacio(doc, y, 30);
+ doc.text('Las cuotas tachadas ya están pagadas.', mx, y); y += 5;
+ pdfCajaMonto(doc, mx, y, C, 'DEUDA TOTAL', c.total, C.red, C.redLight);
+
+ return pdfTerminar(doc, `Estado_Cuenta_${nombreArchivoSeguro(c.nombre)}_${hoy}.pdf`);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MODAL & COMPARTIR
+// ══════════════════════════════════════════════════════════════════
+let pdfActual = null;
+
+function abrirModalPostPdf(datos, pdf) {
+ pendingModalData = datos;
+ pdfActual = pdf;
+ const titulos = { VENTA: '¡Recibo de venta listo!', COBRO: '¡Recibo de cobro listo!', ESTADO: 'Estado de cuenta listo' };
+ document.getElementById('modal-pdf-title').textContent = titulos[datos.tipo] || '¡PDF listo!';
+ document.getElementById('modal-pdf-desc').textContent =
+ `PDF de ${datos.nombre}. Tocá "Compartir PDF" para mandarlo por WhatsApp, correo o la app que quieras.`;
+ document.getElementById('modal-post-pdf').classList.add('active');
+}
+function cerrarModalPdf() {
+ document.getElementById('modal-post-pdf').classList.remove('active');
+ pendingModalData = null;
+ pdfActual = null;
+}
+
+async function compartirPDF() {
+ if (!pdfActual) return;
+ const { file } = pdfActual;
+ if (navigator.canShare && navigator.canShare({ files: [file] })) {
+ try {
+ await navigator.share({ files: [file], title: file.name, text: `ALLSHOP — ${pendingModalData?.nombre || ''}` });
+ return;
+ } catch (e) {
+ if (e.name === 'AbortError') return; // el usuario cerró el menú
+ }
+ }
+ // Navegador sin "compartir archivos" (ej. algunas PC): se descarga para adjuntarlo a mano
+ descargarPDF();
+ alert('Este navegador no permite compartir archivos directo. El PDF se descargó: adjuntalo en WhatsApp Web o en el correo.');
+}
+
+function descargarPDF() {
+ if (!pdfActual) return;
+ const url = URL.createObjectURL(pdfActual.blob);
+ const a = document.createElement('a');
+ a.href = url; a.download = pdfActual.nombreArchivo;
+ document.body.appendChild(a); a.click(); a.remove();
+ setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+function verPDF() {
+ if (!pdfActual) return;
+ const url = URL.createObjectURL(pdfActual.blob);
+ window.open(url, '_blank');
+ setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function generarTextoResumen(d) {
+ if (d.tipo === 'ESTADO') return d.texto;
+ let txt = `*ALLSHOP — COMPROBANTE DE ${d.tipo}*\n\n`;
+ txt += `👤 Cliente: *${d.nombre}*\n`;
+ txt += `📅 Fecha: ${fmtFechaPY(d.fecha)}\n`;
+
+ if (d.tipo === 'VENTA') {
+ txt += `🛒 Producto: ${d.producto}${d.observacion ? ' — ' + d.observacion : ''}\n`;
+ txt += `💵 Precio Total: ${fmtGs(d.movimiento)}\n`;
+ if (d.anticipo > 0) txt += `✅ Anticipo: ${fmtGs(d.anticipo)}\n`;
+ if (d.cuotas && d.cuotas.length) {
+ txt += `\n*Cronograma de Cuotas:*\n`;
+ d.cuotas.forEach(c => { txt += `• Cuota ${c.num} (${fmtFechaPY(c.fecha)}): ${fmtGs(c.monto)}\n`; });
+ }
+ txt += `\n📌 *Saldo Pendiente:* ${fmtGs(d.saldoActual)}\n`;
+ } else {
+ txt += `💵 *Monto Abonado:* ${fmtGs(d.movimiento)}\n`;
+ if (d.cuotas && d.cuotas.length) {
+ txt += `\n*Estado de Cuotas:*\n`;
+ d.cuotas.forEach(q => {
+ const linea = `Cuota ${q.n}/${d.cuotas.length} (${fmtFechaPY(q.vence)}): ${fmtGs(q.estado === 'PAGADA' ? q.monto : q.saldo)}`;
+ txt += q.estado === 'PAGADA' ? `• ~${linea}~ ✅\n`
+ : q.estado === 'PARCIAL' ? `• ${linea} _(parcial)_\n`
+ : `• ${linea}\n`;
+ });
+ }
+ txt += `\n📌 *Saldo Restante:* ${fmtGs(d.saldoActual)}\n`;
+ if (d.otrosCreditosCount > 1) {
+ txt += `⚠️ *Deuda total (${d.otrosCreditosCount} créditos):* ${fmtGs(d.deudaTotalCliente)}\n`;
+ }
+ }
+ txt += `\n_¡Muchas gracias por tu preferencia!_`;
+ return txt;
+}
+
+function modalShareWhatsApp() {
+ if (!pendingModalData) return;
+ const d = pendingModalData;
+ const texto = generarTextoResumen(d);
+ let tel = (d.telefono || '').replace(/\D/g, '');
+ if (tel.startsWith('0')) tel = '595' + tel.slice(1); // 0981... → 595981...
+ const url = tel ? `https://wa.me/${tel}?text=${encodeURIComponent(texto)}` : `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+ window.open(url, '_blank');
+}
+
+async function modalCopyText() {
+ if (!pendingModalData) return;
+ try {
+ await navigator.clipboard.writeText(generarTextoResumen(pendingModalData));
+ alert('📋 Resumen copiado.');
+ } catch (e) {
+ alert('No se pudo copiar automáticamente.');
+ }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ACCIONES DE ENVIO VENTA Y PAGO
 // ══════════════════════════════════════════════════════════════════
 async function vfEnviarVenta() {
-  const fecha      = document.getElementById('vf-fecha').value;
-  const nombre     = vfGetNombre();
-  const persona    = document.getElementById('vf-persona').value.trim().toUpperCase();
-  const empresa    = document.getElementById('vf-empresa').value.trim().toUpperCase();
-  const producto   = vfGetProducto();
-  const obs        = document.getElementById('vf-obs').value.trim().toUpperCase();
-  const precioReal = parseFloat(document.getElementById('vf-precioreal').value)  || 0;
-  const precioVenta= parseFloat(document.getElementById('vf-precioventa').value) || 0;
-  const porcentaje = parseFloat(document.getElementById('vf-porcentaje').value) / 100 || 0;
-  const anticipo   = parseFloat(document.getElementById('vf-anticipo').value)   || 0;
-  const nCuotas    = parseInt(document.getElementById('vf-ncuotas').value)       || 0;
-  const montoCuota = parseFloat(document.getElementById('vf-montocuota').value)  || 0;
+ const fecha = document.getElementById('vf-fecha').value;
+ const nombre = vfGetNombre();
+ const persona = document.getElementById('vf-persona').value.trim().toUpperCase();
+ const empresa = document.getElementById('vf-empresa').value.trim().toUpperCase();
+ const producto = vfGetProducto();
+ const obs = document.getElementById('vf-obs').value.trim().toUpperCase();
+ const precioReal = parseFloat(document.getElementById('vf-precioreal').value) || 0;
+ const precioVenta= parseFloat(document.getElementById('vf-precioventa').value) || 0;
+ const porcentaje = parseFloat(document.getElementById('vf-porcentaje').value) / 100 || 0;
+ const anticipo = parseFloat(document.getElementById('vf-anticipo').value) || 0;
+ const nCuotas = parseInt(document.getElementById('vf-ncuotas').value) || 0;
+ const montoCuota = parseFloat(document.getElementById('vf-montocuota').value) || 0;
+ const telefono = document.getElementById('vf-telefono').value.trim();
 
-  if(!fecha || !nombre || precioVenta <= 0){
-    vfToast('vf-toast-venta', false, 'Completá fecha, cliente y precio de venta.');
-    return;
-  }
-  const descuento = Math.round(precioReal * porcentaje);
-  const ganancia  = precioVenta - (precioReal - descuento); // ✅ CORREGIDO: precioVenta - costo neto
-  const cuotas = [];
-  for(let i=1;i<=nCuotas;i++){
-    const f = document.getElementById(`vf-cuota-fecha-${i}`)?.value || '';
-    const m = parseFloat(document.getElementById(`vf-cuota-monto-${i}`)?.value) || montoCuota;
-    if(f) cuotas.push({ num:i, fecha:f, monto:m });
-  }
+ if(!fecha || !nombre || precioVenta <= 0){
+ vfToast('vf-toast-venta', false, 'Completá fecha, cliente y precio de venta.');
+ return;
+ }
+ const descuento = Math.round(precioReal * porcentaje);
+ const ganancia = precioVenta - (precioReal - descuento);
+ const cuotas = [];
+ for(let i=1;i<=nCuotas;i++){
+ const f = document.getElementById(`vf-cuota-fecha-${i}`)?.value || '';
+ const m = parseFloat(document.getElementById(`vf-cuota-monto-${i}`)?.value) || montoCuota;
+ if(f) cuotas.push({ num:i, fecha:f, monto:m });
+ }
 
-  const payload = {
-    tipo:'VENTA', fecha:vfFechaASerial(fecha),
-    nombre, persona, empresa, producto, observacion:obs,
-    movimiento:precioVenta, precioReal, porcentaje,
-    margen:descuento, ganancias:ganancia, anticipo, nCuotas, montoCuota, cuotas
-  };
+ const payload = {
+ tipo:'VENTA', fecha:vfFechaASerial(fecha),
+ nombre, persona, empresa, producto, observacion:obs,
+ movimiento:precioVenta, precioReal, porcentaje,
+ margen:descuento, ganancias:ganancia, anticipo, nCuotas, montoCuota, cuotas
+ };
 
-  setBtnLoading('vf-btn-venta','vf-spinner-venta','vf-btn-venta-label',true);
-  try {
-    const res  = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
-    const json = await res.json();
-    if(json.ok){
-      vfToast('vf-toast-venta', true, `Venta de <strong>${nombre}</strong> registrada — ${precioVenta.toLocaleString('es-PY')} Gs. ✅`);
-      if(pedidoEnConversion){
-        pdCambiarEstado(pedidoEnConversion, 'VENDIDO', true);
-        pedidoEnConversion = null;
-      }
-      limpiarVenta();
-      cargarCuotero();
-    } else {
-      vfToast('vf-toast-venta', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
-    }
-  } catch(e) {
-    vfToast('vf-toast-venta', false, 'Error de conexión: ' + e.message);
-  } finally {
-    setBtnLoading('vf-btn-venta','vf-spinner-venta','vf-btn-venta-label',false,'Registrar Venta');
-  }
+ setBtnLoading('vf-btn-venta','vf-spinner-venta','vf-btn-venta-label',true);
+ try {
+ const res = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+ const json = await res.json();
+ if(json.ok){
+ vfToast('vf-toast-venta', true, `Venta de <strong>${nombre}</strong> registrada con éxito ✅`);
+
+ const datosRecibo = {
+ tipo: 'VENTA', nombre, persona, empresa, producto, observacion: obs, fecha,
+ movimiento: precioVenta, anticipo, cuotas, saldoActual: -(precioVenta - anticipo), telefono
+ };
+
+ try {
+ const pdf = generarReciboPDFVenta(datosRecibo);
+ abrirModalPostPdf(datosRecibo, pdf);
+ } catch(err) {
+ vfToast('vf-toast-venta', false, 'La venta se guardó, pero falló el PDF: ' + err.message);
+ }
+ limpiarVenta();
+ cargarDatos();
+ } else {
+ vfToast('vf-toast-venta', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
+ }
+ } catch(e) {
+ vfToast('vf-toast-venta', false, 'Error de conexión: ' + e.message);
+ } finally {
+ setBtnLoading('vf-btn-venta','vf-spinner-venta','vf-btn-venta-label',false,'Registrar Venta');
+ }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// ENVIAR COBRO
-// ══════════════════════════════════════════════════════════════════
 async function vfEnviarPago() {
-  const nombre  = document.getElementById('pf-nombre-sel').value.trim().toUpperCase();
-  const fecha   = document.getElementById('pf-fecha').value;
-  const monto   = parseFloat(document.getElementById('pf-monto').value) || 0;
-  const producto= document.getElementById('pf-producto').value.trim().toUpperCase();
-  const persona = document.getElementById('pf-persona').value.trim().toUpperCase();
-  const obs     = document.getElementById('pf-obs').value.trim().toUpperCase();
-  const empresa = document.getElementById('pf-empresa').value.trim().toUpperCase();
+ const idCredito = document.getElementById('pf-nombre-sel').value;
+ const fecha = document.getElementById('pf-fecha').value;
+ const monto = parseFloat(document.getElementById('pf-monto').value) || 0;
+ const obs = document.getElementById('pf-obs').value.trim().toUpperCase();
+ const telefono = document.getElementById('pf-telefono').value.trim();
 
-  if(!nombre || !fecha || monto <= 0){
-    vfToast('vf-toast-pago', false, 'Seleccioná un cliente, fecha y monto del cobro.');
-    return;
-  }
+ if(!idCredito || !fecha || monto <= 0){
+ vfToast('vf-toast-pago', false, 'Seleccioná un crédito, fecha y monto del cobro.');
+ return;
+ }
+ const credito = creditosRows.slice(1).find(r => r[0] === idCredito);
+ const nombre = credito ? credito[3] : '';
+ const producto = credito ? credito[5] : '';
+ const otrosCreditos = creditosRows.slice(1).filter(r => r[3] === nombre && r[15] === 'FINANCIADO');
+ const deudaTotalCliente = otrosCreditos.reduce((acc,r) => acc + saldoPendienteCredito(r[0]), 0) - monto;
 
-  if(pfCreditos.length > 1 && !pfCreditoSel){
-    vfToast('vf-toast-pago', false, 'Este cliente tiene varios créditos: tocá el que estás cobrando.');
-    return;
-  }
+ // Estado de cuotas DESPUÉS de este pago (mismo cálculo que el Apps Script)
+ const cuotasTras = aplicarPagoSimulado(cuotasDeCredito(idCredito), monto);
+ const saldoActual = cuotasTras.length
+ ? cuotasTras.reduce((a, q) => a + q.saldo, 0)
+ : saldoPendienteCredito(idCredito) - monto;
 
-  const payload = {
-    tipo:'PAGO', fecha:vfFechaASerial(fecha),
-    nombre, persona, empresa, producto, observacion:obs,
-    movimiento:-Math.abs(monto),
-    idCredito: pfCreditoSel || undefined
-  };
+ const payload = {
+ tipo:'PAGO', idCredito, fecha:vfFechaASerial(fecha),
+ nombre, persona: credito[4]||'', empresa: credito[7]||'', producto, observacion:obs,
+ movimiento:-Math.abs(monto)
+ };
 
-  setBtnLoading('vf-btn-pago','vf-spinner-pago','vf-btn-pago-label',true);
-  try {
-    const res  = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
-    const json = await res.json();
-    if(json.ok){
-      vfToast('vf-toast-pago', true, `Cobro de <strong>${monto.toLocaleString('es-PY')} Gs.</strong> registrado para ${nombre}${json.idCredito ? ' (' + json.idCredito + ')' : ''}${typeof json.saldoNuevo === 'number' ? ' — saldo: ' + json.saldoNuevo.toLocaleString('es-PY') + ' Gs.' : ''}`);
-      limpiarPago();
-      cargarCuotero();
-    } else {
-      vfToast('vf-toast-pago', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
-    }
-  } catch(e) {
-    vfToast('vf-toast-pago', false, 'Error de conexión: ' + e.message);
-  } finally {
-    setBtnLoading('vf-btn-pago','vf-spinner-pago','vf-btn-pago-label',false,'Registrar Cobro');
-  }
+ setBtnLoading('vf-btn-pago','vf-spinner-pago','vf-btn-pago-label',true);
+ try {
+ const res = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+ const json = await res.json();
+ if(json.ok){
+ vfToast('vf-toast-pago', true, `Cobro de <strong>${monto.toLocaleString('es-PY')} Gs.</strong> registrado ✅`);
+
+ const datosRecibo = {
+ tipo: 'COBRO', nombre, producto, observacion: obs, fecha, idCredito,
+ observacionCredito: credito ? credito[6] : '',
+ movimiento: monto, saldoActual: Math.max(0, saldoActual),
+ cuotas: cuotasTras, otrosCreditosCount: otrosCreditos.length,
+ deudaTotalCliente: Math.max(0, deudaTotalCliente), telefono
+ };
+
+ try {
+ const pdf = generarReciboPDFPago(datosRecibo);
+ abrirModalPostPdf(datosRecibo, pdf);
+ } catch(err) {
+ vfToast('vf-toast-pago', false, 'El cobro se guardó, pero falló el PDF: ' + err.message);
+ }
+ limpiarPago();
+ cargarDatos();
+ } else {
+ vfToast('vf-toast-pago', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
+ }
+ } catch(e) {
+ vfToast('vf-toast-pago', false, 'Error de conexión: ' + e.message);
+ } finally {
+ setBtnLoading('vf-btn-pago','vf-spinner-pago','vf-btn-pago-label',false,'Registrar Cobro');
+ }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// LIMPIAR FORMULARIOS
-// ══════════════════════════════════════════════════════════════════
 function limpiarVenta() {
-  document.getElementById('vf-nombre-sel').value = '';
-  document.getElementById('vf-nombre-nuevo').value = '';
-  document.getElementById('vf-nuevo-cliente-box').style.display = 'none';
-  ['vf-empresa','vf-precioreal','vf-precioventa','vf-porcentaje','vf-obs','vf-producto-otro']
-    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('vf-anticipo').value = '0';
-  document.getElementById('vf-persona').value  = '';
-  document.getElementById('vf-producto').value = '';
-  document.getElementById('vf-ncuotas').value  = '0';
-  document.getElementById('vf-producto-otro-field').style.display = 'none';
-  document.getElementById('vf-cuotas-section').style.display  = 'none';
-  document.getElementById('vf-montocuota-row').style.display  = 'none';
-  document.getElementById('vf-cuotas-grid').innerHTML = '';
-  ['vf-disp-descuento','vf-disp-ganancias','vf-disp-movimiento'].forEach(id=>{
-    document.getElementById(id).textContent='—';
-  });
-  ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.remove('lit'));
-  document.getElementById('vf-fecha').value = new Date().toISOString().split('T')[0];
+ document.getElementById('vf-nombre-sel').value = '';
+ document.getElementById('vf-nombre-buscar').value = '';
+ document.getElementById('vf-combo-lista-cliente').classList.remove('show');
+ document.getElementById('vf-nombre-nuevo').value = '';
+ document.getElementById('vf-nuevo-cliente-box').style.display = 'none';
+ ['vf-empresa','vf-precioreal','vf-precioventa','vf-porcentaje','vf-obs','vf-producto-otro','vf-telefono']
+ .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+ document.getElementById('vf-anticipo').value = '0';
+ document.getElementById('vf-persona').value = '';
+ document.getElementById('vf-producto').value = '';
+ document.getElementById('vf-ncuotas').value = '0';
+ document.getElementById('vf-producto-otro-field').style.display = 'none';
+ document.getElementById('vf-cuotas-section').style.display = 'none';
+ document.getElementById('vf-montocuota-row').style.display = 'none';
+ document.getElementById('vf-cuotas-grid').innerHTML = '';
+ ['vf-disp-descuento','vf-disp-ganancias','vf-disp-movimiento'].forEach(id=>{
+ document.getElementById(id).textContent='—';
+ });
+ ['calc-descuento','calc-ganancia','calc-movimiento'].forEach(id=>document.getElementById(id).classList.remove('lit'));
+ document.getElementById('vf-fecha').value = new Date().toISOString().split('T')[0];
 }
+
+// ══════════════════════════════════════════════════════════════════
+// PEDIDOS — lista simple: producto, empresa, monto
+// ══════════════════════════════════════════════════════════════════
+let pedidos = [];
+
+async function pdCargar() {
+ const lista = document.getElementById('pd-lista');
+ if (!pedidos.length) lista.innerHTML = '<div class="pd-empty">Cargando…</div>';
+ try {
+ const res = await fetch(SCRIPT_URL + '?accion=pedidos');
+ const json = await res.json();
+ if (!json.ok) throw new Error(json.error || 'respuesta inválida');
+ pedidos = json.pedidos || [];
+ pdRender();
+ } catch (e) {
+ lista.innerHTML = `<div class="pd-empty">No se pudieron cargar los pedidos (${esc(e.message)}).<br>¿Ya actualizaste el Code.gs y lo volviste a implementar?</div>`;
+ }
+}
+
+function pdRender() {
+ const filtro = document.getElementById('pd-buscar').value.trim().toUpperCase();
+ const abiertos = pedidos.filter(p => (p.estado || 'PENDIENTE') === 'PENDIENTE');
+ const visibles = filtro
+ ? abiertos.filter(p => `${p.producto} ${p.empresa}`.toUpperCase().includes(filtro))
+ : abiertos;
+
+ const total = visibles.reduce((a, p) => a + (Number(p.monto) || 0), 0);
+ document.getElementById('pd-count').textContent = `${visibles.length} pedido${visibles.length === 1 ? '' : 's'}${filtro ? ' (filtrado)' : ''}`;
+ document.getElementById('pd-total').textContent = total.toLocaleString('es-PY') + ' Gs.';
+
+ // Empresas ya usadas → sugerencias al escribir
+ const empresas = [...new Set(pedidos.map(p => p.empresa).filter(Boolean))].sort();
+ document.getElementById('pd-empresas').innerHTML = empresas.map(e => `<option value="${esc(e)}">`).join('');
+
+ const lista = document.getElementById('pd-lista');
+ if (!visibles.length) {
+ lista.innerHTML = `<div class="pd-empty">${filtro ? 'Nada coincide con la búsqueda.' : 'No hay pedidos anotados.'}</div>`;
+ return;
+ }
+ lista.innerHTML = visibles.map(p => `
+ <div class="pd-row">
+ <div class="pd-row-info">
+ <div class="pd-row-prod">${esc(p.producto)}</div>
+ <div class="pd-row-meta">${esc(p.empresa || 'Sin empresa')} · ${esc(p.fecha)}</div>
+ </div>
+ <div class="pd-row-monto">${(Number(p.monto) || 0).toLocaleString('es-PY')} Gs.</div>
+ <button class="pd-icon-btn ok" title="Listo" onclick="pdEstado('${esc(p.id)}','LISTO')">✓</button>
+ <button class="pd-icon-btn del" title="Borrar" onclick="if(confirm('¿Borrar este pedido?'))pdEstado('${esc(p.id)}','BORRADO')">🗑</button>
+ </div>`).join('');
+}
+
+async function pdAgregar() {
+ const producto = document.getElementById('pd-producto').value.trim().toUpperCase();
+ const empresa = document.getElementById('pd-empresa').value.trim().toUpperCase();
+ const monto = parseFloat(document.getElementById('pd-monto').value) || 0;
+ if (!producto) { vfToast('pd-toast', false, 'Escribí el producto.'); return; }
+
+ const btn = document.getElementById('pd-btn');
+ btn.disabled = true; btn.textContent = 'Guardando…';
+ try {
+ const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ tipo: 'PEDIDO', producto, empresa, monto }) });
+ const json = await res.json();
+ if (!json.ok) throw new Error(json.error || 'DESCONOCIDO');
+ pedidos.unshift({ id: json.id, fecha: json.fecha || new Date().toLocaleDateString('es-PY'), producto, empresa, monto, estado: 'PENDIENTE' });
+ pdRender();
+ document.getElementById('pd-producto').value = '';
+ document.getElementById('pd-monto').value = '';
+ document.getElementById('pd-producto').focus();
+ } catch (e) {
+ vfToast('pd-toast', false, 'No se pudo guardar: ' + e.message);
+ } finally {
+ btn.disabled = false; btn.textContent = '＋ Agregar';
+ }
+}
+
+async function pdEstado(id, estado) {
+ const p = pedidos.find(x => x.id === id);
+ if (!p) return;
+ const anterior = p.estado;
+ p.estado = estado; pdRender(); // se quita de la lista al instante
+ try {
+ const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ tipo: 'PEDIDO_ESTADO', id, estado }) });
+ const json = await res.json();
+ if (!json.ok) throw new Error(json.error || 'DESCONOCIDO');
+ } catch (e) {
+ p.estado = anterior; pdRender();
+ vfToast('pd-toast', false, 'No se pudo actualizar: ' + e.message);
+ }
+}
+
 function limpiarPago() {
-  document.getElementById('pf-nombre-sel').value = '';
-  ['pf-monto','pf-empresa','pf-obs'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('pf-producto').value = '';
-  document.getElementById('pf-persona').value  = '';
-  const sb = document.getElementById('pf-saldo-box'); sb.style.display='none'; sb.innerHTML='';
-  pfCargarCreditos('');
-  document.getElementById('pf-fecha').value = new Date().toISOString().split('T')[0];
-}
-
-// ══════════════════════════════════════════════════════════════════
-// PEDIDOS
-// ══════════════════════════════════════════════════════════════════
-let pedidosCache = [];
-let pedidoEnConversion = null;
-
-function esc(s){
-  return (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function pdManejarCliente(val) {
-  document.getElementById('pd-nuevo-cliente-box').style.display = val === '__nuevo__' ? 'block' : 'none';
-  if(val !== '__nuevo__') document.getElementById('pd-nombre-nuevo').value = '';
-}
-function pdGetNombre() {
-  const sel = document.getElementById('pd-nombre-sel').value;
-  if(sel === '__nuevo__') return document.getElementById('pd-nombre-nuevo').value.trim().toUpperCase();
-  return sel.trim().toUpperCase();
-}
-
-async function pdEnviarPedido() {
-  const fecha    = document.getElementById('pd-fecha').value;
-  const nombre   = pdGetNombre();
-  const telefono = document.getElementById('pd-telefono').value.trim();
-  const categoria= document.getElementById('pd-categoria').value;
-  const detalle  = document.getElementById('pd-detalle').value.trim().toUpperCase();
-  const monto    = parseFloat(document.getElementById('pd-monto').value) || 0;
-  const sena     = parseFloat(document.getElementById('pd-sena').value)  || 0;
-  const estado   = document.getElementById('pd-estado').value;
-  const entrega  = document.getElementById('pd-entrega').value;
-
-  if(!fecha || !nombre || !detalle){
-    vfToast('pd-toast', false, 'Completá fecha, cliente y qué pidió.');
-    return;
-  }
-
-  const payload = { tipo:'PEDIDO', fecha, nombre, telefono, categoria, detalle, monto, sena, estado, entrega };
-
-  setBtnLoading('pd-btn','pd-spinner','pd-btn-label',true);
-  try {
-    const res  = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
-    const json = await res.json();
-    if(json.ok){
-      vfToast('pd-toast', true, `Pedido de <strong>${esc(nombre)}</strong> guardado${monto ? ' — ' + monto.toLocaleString('es-PY') + ' Gs.' : ''}`);
-      limpiarPedido();
-      pdCargarPedidos();
-    } else {
-      vfToast('pd-toast', false, 'Error del Script: ' + (json.error || 'DESCONOCIDO'));
-    }
-  } catch(e) {
-    vfToast('pd-toast', false, 'Error de conexión: ' + e.message);
-  } finally {
-    setBtnLoading('pd-btn','pd-spinner','pd-btn-label',false,'Guardar Pedido');
-  }
-}
-
-async function pdCargarPedidos() {
-  const cont = document.getElementById('pd-lista');
-  cont.innerHTML = '<div class="pd-empty">Cargando…</div>';
-  try {
-    const res  = await fetch(SCRIPT_URL + '?accion=pedidos');
-    const json = await res.json();
-    if(!json.ok) throw new Error(json.error || 'respuesta inválida');
-    pedidosCache = json.pedidos || [];
-    pdRenderPedidos();
-  } catch(e) {
-    cont.innerHTML = `<div class="pd-empty">No se pudieron cargar los pedidos (${esc(e.message)}).<br>Revisá que el Apps Script tenga la parte de PEDIDOS.</div>`;
-  }
-}
-
-function pdRenderPedidos() {
-  const cont = document.getElementById('pd-lista');
-  const abiertos = pedidosCache.filter(p => !['VENDIDO','ENTREGADO','CANCELADO'].includes((p.estado||'').toUpperCase()));
-  if(!abiertos.length){
-    cont.innerHTML = '<div class="pd-empty">No hay pedidos abiertos 🎉</div>';
-    return;
-  }
-  cont.innerHTML = abiertos.map(p => {
-    const monto = parseFloat(p.monto) || 0;
-    const sena  = parseFloat(p.sena)  || 0;
-    const tel   = (p.telefono || '').toString().replace(/\D/g,'');
-    const telWa = tel ? (tel.startsWith('595') ? tel : '595' + tel.replace(/^0/,'')) : '';
-    const estado= (p.estado || 'PENDIENTE').toUpperCase();
-    return `<div class="pd-item">
-      <div class="pd-item-top">
-        <div>
-          <div class="pd-item-name">${esc(p.nombre)}</div>
-          <div class="pd-item-det">${esc(p.detalle)}</div>
-        </div>
-        <div class="pd-item-monto">${monto ? monto.toLocaleString('es-PY') + ' Gs.' : '—'}</div>
-      </div>
-      <div class="pd-item-meta">
-        <span class="pd-badge ${esc(estado)}">${estado === 'LLEGO' ? 'LLEGÓ' : esc(estado)}</span>
-        <span style="font-size:11px;color:var(--text2);">📅 ${esc(p.fecha)}${p.entrega ? ' · entrega ' + esc(p.entrega) : ''}${sena ? ' · seña ' + sena.toLocaleString('es-PY') + ' Gs.' : ''}</span>
-      </div>
-      <div class="pd-item-actions">
-        ${telWa ? `<a class="pd-mini-btn wa" href="https://wa.me/${telWa}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
-        ${estado === 'PENDIENTE' ? `<button class="pd-mini-btn" onclick="pdCambiarEstado('${esc(p.id)}','ENCARGADO')">📦 Encargado</button>` : ''}
-        ${estado !== 'LLEGO' ? `<button class="pd-mini-btn" onclick="pdCambiarEstado('${esc(p.id)}','LLEGO')">✔ Llegó</button>` : ''}
-        <button class="pd-mini-btn venta" onclick="pdPasarAVenta('${esc(p.id)}')">🛒 Pasar a venta</button>
-        <button class="pd-mini-btn cancel" onclick="if(confirm('¿Cancelar este pedido?')) pdCambiarEstado('${esc(p.id)}','CANCELADO')">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function pdCambiarEstado(id, estado, silencioso) {
-  try {
-    const res  = await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify({ tipo:'PEDIDO_ESTADO', id, estado }) });
-    const json = await res.json();
-    if(!json.ok) throw new Error(json.error || 'DESCONOCIDO');
-    const p = pedidosCache.find(x => x.id === id);
-    if(p) p.estado = estado;
-    pdRenderPedidos();
-  } catch(e) {
-    if(!silencioso) vfToast('pd-toast', false, 'No se pudo actualizar el pedido: ' + e.message);
-  }
-}
-
-function pdPasarAVenta(id) {
-  const p = pedidosCache.find(x => x.id === id);
-  if(!p) return;
-  limpiarVenta();
-  mostrarPantalla('venta');
-  pedidoEnConversion = id;
-
-  // Cliente
-  const sel = document.getElementById('vf-nombre-sel');
-  const nombre = (p.nombre || '').toUpperCase();
-  if([...sel.options].some(o => o.value === nombre)) {
-    sel.value = nombre;
-    vfManejarCliente(nombre);
-  } else {
-    sel.value = '__nuevo__';
-    vfManejarCliente('__nuevo__');
-    document.getElementById('vf-nombre-nuevo').value = nombre;
-  }
-
-  // Categoría
-  const cat = (p.categoria || '').toUpperCase();
-  const selCat = document.getElementById('vf-producto');
-  if(cat && [...selCat.options].some(o => o.value === cat)) {
-    selCat.value = cat;
-  }
-  vfCheckOtraCategoria(selCat.value);
-
-  document.getElementById('vf-obs').value         = (p.detalle || '').toUpperCase();
-  document.getElementById('vf-precioventa').value = parseFloat(p.monto) || '';
-  document.getElementById('vf-anticipo').value    = parseFloat(p.sena)  || 0;
-  vfRecalc();
-  vfToast('vf-toast-venta', true, 'Datos cargados del pedido. Completá costo y cuotas, y registrá la venta.');
-}
-
-function limpiarPedido() {
-  document.getElementById('pd-nombre-sel').value = '';
-  pdManejarCliente('');
-  ['pd-telefono','pd-detalle','pd-monto','pd-entrega'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pd-sena').value = '0';
-  document.getElementById('pd-categoria').value = '';
-  document.getElementById('pd-estado').value = 'PENDIENTE';
-  document.getElementById('pd-fecha').value = new Date().toISOString().split('T')[0];
+ document.getElementById('pf-nombre-sel').value = '';
+ document.getElementById('pf-nombre-buscar').value = '';
+ document.getElementById('pf-combo-lista-cliente').classList.remove('show');
+ ['pf-monto','pf-obs','pf-telefono'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+ const sb = document.getElementById('pf-saldo-box'); sb.style.display='none'; sb.innerHTML='';
+ document.getElementById('pf-fecha').value = new Date().toISOString().split('T')[0];
 }
 </script>
 </body>
