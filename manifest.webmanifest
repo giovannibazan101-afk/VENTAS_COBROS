@@ -1,0 +1,16 @@
+{
+  "name": "AllShop — Ventas & Cobros",
+  "short_name": "AllShop",
+  "description": "Ventas, cobros, deudas, flujo de caja y pedidos de AllShop.",
+  "start_url": "./ventas.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06101f",
+  "theme_color": "#06101f",
+  "lang": "es-PY",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
