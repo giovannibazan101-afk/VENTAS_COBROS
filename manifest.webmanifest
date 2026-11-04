@@ -2,7 +2,7 @@
   "name": "AllShop — Ventas & Cobros",
   "short_name": "AllShop",
   "description": "Ventas, cobros, deudas, flujo de caja y pedidos de AllShop.",
-  "start_url": "./ventas.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
